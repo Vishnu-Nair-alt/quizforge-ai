@@ -8,7 +8,7 @@ from google import genai
 import os
 import shutil
 import re
-from backend.pydantic import GenerateQuizRequest, QuizGenerationResponse, SaveQuizRequest
+from schemas import GenerateQuizRequest, QuizGenerationResponse, SaveQuizRequest
 from database import Base, engine, get_db
 from models import Quiz
 
@@ -215,16 +215,12 @@ Document text:
             model=GEMINI_MODEL,
             contents=prompt,
             config={
-                "response_format": {
-                    "text": {
-                        "mime_type": "application/json",
-                        "schema": QuizGenerationResponse.model_json_schema()
-                    }
-                }
+                "response_mime_type": "application/json",
+                "response_schema": QuizGenerationResponse,
             }
         )
 
-        quiz_data = QuizGenerationResponse.model_validate_json(response.text)
+        quiz_data = response.parsed
 
         return {
             "success": True,

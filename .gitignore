@@ -1,25 +1,83 @@
-# Secrets
+# =========================
+# Environment files / secrets
+# =========================
 .env
 .env.*
 backend/.env
 backend/.env.*
+frontend/.env
+frontend/.env.*
 
-# Backend Python
+# =========================
+# Python / FastAPI backend
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+venv/
+.venv/
 backend/venv/
 backend/.venv/
-backend/__pycache__/
+
+# Python build/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Database files
+# =========================
+*.db
+*.sqlite
+*.sqlite3
 backend/*.db
 backend/*.sqlite
 backend/*.sqlite3
+
+# =========================
+# Uploaded files / user data
+# =========================
+uploads/
 backend/uploads/
 
-# Frontend
+# =========================
+# Node / React frontend
+# =========================
+node_modules/
 frontend/node_modules/
+
+dist/
 frontend/dist/
 
-# General
-__pycache__/
-*.pyc
+build/
+frontend/build/
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+vite-dev.err.log
+vite-dev.out.log
+frontend/vite-dev.err.log
+frontend/vite-dev.out.log
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS files
+# =========================
 .DS_Store
 Thumbs.db
-.vscode/
+desktop.ini

@@ -1,6 +1,7 @@
 from typing import List
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+
 
 
 class GenerateQuizRequest(BaseModel):
@@ -28,3 +29,29 @@ class SaveQuizRequest(BaseModel):
     difficulty: str
     topic_focus: Optional[str] = ""
     questions: List[MCQ]
+
+
+
+
+#LOGIN/REGISTER SCHEMAS
+class UserSignupRequest(BaseModel):
+    name: str = Field(min_length=2)
+    email: EmailStr
+    password: str = Field(min_length=6)
+
+
+class UserLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserResponse

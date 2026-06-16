@@ -194,9 +194,9 @@ function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">QuizForge AI</p>
-          <h1>PDF to quiz workspace</h1>
+        <div className="brand-block">
+          <h1>QuizForge AI</h1>
+          <p className="signature-line">Craft smarter quizzes, faster.</p>
         </div>
         <div className="status-strip" aria-live="polite">
           {error && <span className="status error">{error}</span>}
@@ -231,7 +231,7 @@ function App() {
               <form className="panel-section" onSubmit={handleUpload}>
                 <div className="section-title">
                   <FileText size={18} />
-                  <h2>Source PDF</h2>
+                  <h2>Source Material</h2>
                 </div>
                 <label className="file-drop">
                   <input
@@ -240,7 +240,7 @@ function App() {
                     onChange={(event) => setFile(event.target.files?.[0] || null)}
                   />
                   <Upload size={22} />
-                  <span>{file?.name || uploadInfo?.filename || 'Select PDF'}</span>
+                  <span>{file?.name || uploadInfo?.filename || 'Choose Source'}</span>
                 </label>
                 {uploadInfo && (
                   <div className="metric-row">
@@ -401,7 +401,7 @@ function App() {
             <div className="empty-state">
               <Sparkles size={32} />
               <h2>Ready for a quiz</h2>
-              <p>Upload a PDF and generate questions from the builder panel.</p>
+              <p>Choose your source material, tune the settings, and generate a polished quiz.</p>
             </div>
           )}
         </section>

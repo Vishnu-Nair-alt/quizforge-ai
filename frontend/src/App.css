@@ -12,12 +12,17 @@
   gap: 24px;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 28px 32px 20px;
+  padding: 30px 32px 22px;
+}
+
+.brand-block {
+  display: grid;
+  gap: 5px;
 }
 
 .eyebrow {
-  margin: 0 0 7px;
-  color: var(--muted);
+  margin: 0;
+  color: var(--accent-strong);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
@@ -34,8 +39,16 @@
 }
 
 .topbar h1 {
-  font-size: 34px;
-  line-height: 1.1;
+  font-size: clamp(34px, 3.2vw, 46px);
+  line-height: 1.05;
+}
+
+.signature-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .status-strip {
@@ -529,7 +542,11 @@ button:focus-visible {
   }
 
   .topbar h1 {
-    font-size: 28px;
+    font-size: 32px;
+  }
+
+  .signature-line {
+    font-size: 15px;
   }
 
   .quiz-header {

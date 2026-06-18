@@ -9,7 +9,7 @@ import re
 
 from schemas import GenerateQuizRequest, QuizGenerationResponse, SaveQuizRequest
 from database import get_db
-from models import Quiz, User
+from models import Quiz, UploadedDocument, User
 from services.auth_service import get_current_user
 
 
@@ -20,15 +20,6 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
-
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-document_text = ""
-uploaded_filename = ""
-
-
-
 
 def chunk_text(text: str, chunk_size: int = 5000, overlap: int = 500):
     chunks = []
@@ -89,9 +80,11 @@ def select_relevant_context(text: str, topic_focus: Optional[str], max_chars: in
 
 
 @router.post("/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...)):
-    global document_text, uploaded_filename
-
+async def upload_pdf(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=400,
@@ -114,14 +107,22 @@ async def upload_pdf(file: UploadFile = File(...)):
             detail=f"Failed to read PDF: {str(e)}"
         )
 
-    document_text = extracted_text
-    uploaded_filename = file.filename
+    document = UploadedDocument(
+        owner_id=current_user.id,
+        filename=file.filename,
+        extracted_text=extracted_text
+    )
+
+    db.add(document)
+    db.commit()
+    db.refresh(document)
 
     return {
         "success": True,
-        "filename": uploaded_filename,
-        "total_characters": len(document_text),
-        "preview": document_text[:1000]
+        "document_id": document.id,
+        "filename": document.filename,
+        "total_characters": len(document.extracted_text),
+        "preview": document.extracted_text[:1000]
     }
 
 
@@ -130,21 +131,34 @@ async def upload_pdf(file: UploadFile = File(...)):
 
 
 @router.post("/generate-quiz")
-def generate_quiz(request: GenerateQuizRequest):
+def generate_quiz(
+    request: GenerateQuizRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     if not GEMINI_API_KEY:
         raise HTTPException(
             status_code=500,
             detail="GEMINI_API_KEY is missing in .env file."
         )
 
-    if not document_text.strip():
+    document = (
+        db.query(UploadedDocument)
+        .filter(
+            UploadedDocument.id == request.document_id,
+            UploadedDocument.owner_id == current_user.id
+        )
+        .first()
+    )
+
+    if document is None or not document.extracted_text.strip():
         raise HTTPException(
-            status_code=400,
-            detail="No PDF text found. Upload a PDF first."
+            status_code=404,
+            detail="Uploaded PDF not found."
         )
 
     selected_context = select_relevant_context(
-        text=document_text,
+        text=document.extracted_text,
         topic_focus=request.topic_focus
     )
 
@@ -194,7 +208,7 @@ Document text:
         return {
             "success": True,
             "title": request.title,
-            "filename": uploaded_filename,
+            "filename": document.filename,
             "difficulty": request.difficulty,
             "topic_focus": request.topic_focus,
             "questions": [question.model_dump() for question in quiz_data.questions]
@@ -226,7 +240,7 @@ def save_quiz(
     quiz = Quiz(
         owner_id=current_user.id,
         title=request.title,
-        filename=request.filename or uploaded_filename,
+        filename=request.filename,
         difficulty=request.difficulty,
         number_of_questions=len(request.questions),
         topic_focus=request.topic_focus,

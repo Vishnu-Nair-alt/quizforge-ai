@@ -97,6 +97,7 @@ function QuizBuilderPage({ user, onLogout }) {
         },
         body: JSON.stringify({
           ...quizDraft,
+          document_id: uploadInfo.document_id,
           number_of_questions: Number(quizDraft.number_of_questions),
         }),
       })

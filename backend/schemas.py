@@ -7,6 +7,7 @@ from datetime import datetime
 
 
 class GenerateQuizRequest(BaseModel):
+    document_id: int
     title: str
     number_of_questions: int = Field(ge=1, le=30)
     difficulty: Literal["Easy", "Medium", "Hard", "Mixed"]

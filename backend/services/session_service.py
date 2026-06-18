@@ -65,7 +65,14 @@ def ensure_session_host(session: QuizSession, current_user: User):
 
 
 def create_quiz_session(db: Session, quiz_id: int, current_user: User):
-    quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
+    quiz = (
+        db.query(Quiz)
+        .filter(
+            Quiz.id == quiz_id,
+            Quiz.owner_id == current_user.id
+        )
+        .first()
+    )
 
     if quiz is None:
         raise HTTPException(

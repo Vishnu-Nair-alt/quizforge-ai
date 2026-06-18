@@ -5,6 +5,7 @@ import {
   FileText,
   Loader2,
   LogOut,
+  Radio,
   RefreshCw,
   Save,
   Sparkles,
@@ -15,7 +16,7 @@ import { API_BASE_URL, apiRequest } from '../services/api'
 
 const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed']
 
-function QuizBuilderPage({ user, onLogout }) {
+function QuizBuilderPage({ user, onLogout, onNavigate }) {
   const [file, setFile] = useState(null)
   const [uploadInfo, setUploadInfo] = useState(null)
   const [quizDraft, setQuizDraft] = useState({
@@ -188,6 +189,17 @@ function QuizBuilderPage({ user, onLogout }) {
           <p className="signature-line">Craft smarter quizzes, faster.</p>
         </div>
         <div className="topbar-actions">
+          <button className="icon-text-button" type="button" onClick={() => onNavigate('quizzes')}>
+            <BookOpen size={16} />
+            Quizzes
+          </button>
+          <button className="icon-text-button" type="button" onClick={() => onNavigate('host')}>
+            <Radio size={16} />
+            Host
+          </button>
+          <button className="icon-text-button" type="button" onClick={() => onNavigate('join')}>
+            Join
+          </button>
           <div className="user-chip">
             <span>{user?.name || 'Creator'}</span>
             <strong>{user?.email}</strong>

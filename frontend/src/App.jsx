@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import LoginSignupPage from './pages/LoginSignupPage'
 import QuizBuilderPage from './pages/QuizBuilderPage'
+import HostSessionPage from './pages/HostSessionPage'
+import JoinSessionPage from './pages/JoinSessionPage'
 import { apiRequest, clearSession, getStoredToken, getStoredUser } from './services/api'
 
 function App() {
   const [user, setUser] = useState(() => getStoredUser())
   const [checkingSession, setCheckingSession] = useState(Boolean(getStoredToken()))
+  const [page, setPage] = useState('quizzes')
 
   useEffect(() => {
     if (!getStoredToken()) return
@@ -29,6 +32,7 @@ function App() {
   function handleLogout() {
     clearSession()
     setUser(null)
+    setPage('quizzes')
   }
 
   if (checkingSession) {
@@ -39,11 +43,42 @@ function App() {
     )
   }
 
-  if (!user) {
-    return <LoginSignupPage onAuthenticated={setUser} />
+  if (!user && page !== 'join') {
+    return (
+      <LoginSignupPage
+        onAuthenticated={setUser}
+        onJoinSession={() => setPage('join')}
+      />
+    )
   }
 
-  return <QuizBuilderPage user={user} onLogout={handleLogout} />
+  if (page === 'join') {
+    return (
+      <JoinSessionPage
+        user={user}
+        onNavigate={setPage}
+        onLogout={handleLogout}
+      />
+    )
+  }
+
+  if (page === 'host') {
+    return (
+      <HostSessionPage
+        user={user}
+        onNavigate={setPage}
+        onLogout={handleLogout}
+      />
+    )
+  }
+
+  return (
+    <QuizBuilderPage
+      user={user}
+      onLogout={handleLogout}
+      onNavigate={setPage}
+    />
+  )
 }
 
 export default App

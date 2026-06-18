@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LogIn, Loader2, Sparkles, UserPlus } from 'lucide-react'
+import { LogIn, Loader2, Radio, Sparkles, UserPlus } from 'lucide-react'
 import { apiRequest, storeSession } from '../services/api'
 
 const emptyLoginForm = {
@@ -13,7 +13,7 @@ const emptySignupForm = {
   password: '',
 }
 
-function LoginSignupPage({ onAuthenticated }) {
+function LoginSignupPage({ onAuthenticated, onJoinSession }) {
   const [mode, setMode] = useState('login')
   const [loginForm, setLoginForm] = useState(emptyLoginForm)
   const [signupForm, setSignupForm] = useState(emptySignupForm)
@@ -192,6 +192,11 @@ function LoginSignupPage({ onAuthenticated }) {
               </button>
             </form>
           )}
+
+          <button className="join-link-button" type="button" onClick={onJoinSession}>
+            <Radio size={16} />
+            Join a live session without an account
+          </button>
         </div>
       </section>
     </main>

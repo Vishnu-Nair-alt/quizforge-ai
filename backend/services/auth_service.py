@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
-
+from typing import Optional
 import bcrypt
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException, status
@@ -55,6 +55,46 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: Session = Depends(get_db)
 ):
+    token = credentials.credentials
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate authentication token."
+    )
+
+    try:
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=[JWT_ALGORITHM]
+        )
+
+        user_id = payload.get("sub")
+
+        if user_id is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(User.id == int(user_id)).first()
+
+    if user is None:
+        raise credentials_exception
+
+    return user
+
+optional_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+
+def get_optional_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_bearer_scheme),
+    db: Session = Depends(get_db)
+):
+    if credentials is None:
+        return None
+
     token = credentials.credentials
 
     credentials_exception = HTTPException(

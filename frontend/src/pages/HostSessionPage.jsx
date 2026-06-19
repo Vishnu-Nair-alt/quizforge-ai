@@ -76,6 +76,15 @@ function HostSessionPage({ user, onNavigate, onLogout }) {
     }
   }
 
+  function createAnotherSession() {
+    setSession(null)
+    setLobby(null)
+    setResults([])
+    setQuizId('')
+    setError('')
+    setLoading('')
+  }
+
   return (
     <main className="app-shell">
       <AppHeader
@@ -136,6 +145,11 @@ function HostSessionPage({ user, onNavigate, onLogout }) {
               {session.status === 'active' && (
                 <button className="danger-button" type="button" onClick={() => updateStatus('end')} disabled={loading === 'end'}>
                   <Square size={16} /> End Session
+                </button>
+              )}
+              {session.status === 'ended' && (
+                <button className="primary-button" type="button" onClick={createAnotherSession}>
+                  <Play size={17} /> Create New Session
                 </button>
               )}
             </div>

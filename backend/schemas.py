@@ -111,12 +111,14 @@ class StartSessionResponse(BaseModel):
     session_code: str
     status: str
     started_at: Optional[datetime]
+    message: str
 
 
 class EndSessionResponse(BaseModel):
     session_code: str
     status: str
     ended_at: Optional[datetime]
+    message: str
 
 
 class SafeQuestionItem(BaseModel):

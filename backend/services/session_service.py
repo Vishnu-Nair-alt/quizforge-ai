@@ -213,7 +213,8 @@ def start_session(db: Session, session_code: str, current_user: User):
         return {
             "session_code": session.session_code,
             "status": session.status,
-            "started_at": session.started_at
+            "started_at": session.started_at,
+            "message": "Session is already active."
         }
 
     if session.status == "ended":
@@ -231,9 +232,9 @@ def start_session(db: Session, session_code: str, current_user: User):
     return {
         "session_code": session.session_code,
         "status": session.status,
-        "started_at": session.started_at
+        "started_at": session.started_at,
+        "message": "Session started successfully."
     }
-
 
 def end_session(db: Session, session_code: str, current_user: User):
     session = get_session_by_code(db, session_code)
@@ -243,7 +244,8 @@ def end_session(db: Session, session_code: str, current_user: User):
         return {
             "session_code": session.session_code,
             "status": session.status,
-            "ended_at": session.ended_at
+            "ended_at": session.ended_at,
+            "message": "Session is already ended."
         }
 
     session.status = "ended"
@@ -255,9 +257,9 @@ def end_session(db: Session, session_code: str, current_user: User):
     return {
         "session_code": session.session_code,
         "status": session.status,
-        "ended_at": session.ended_at
+        "ended_at": session.ended_at,
+        "message": "Session ended successfully."
     }
-
 
 def validate_participant(
     db: Session,

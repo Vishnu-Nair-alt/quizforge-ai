@@ -56,7 +56,6 @@ class QuizSession(Base):
 
     quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
     host_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-
     session_code = Column(String, unique=True, index=True, nullable=False)
     status = Column(String, default="waiting", nullable=False)
 

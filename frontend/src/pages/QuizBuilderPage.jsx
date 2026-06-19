@@ -4,15 +4,14 @@ import {
   Check,
   FileText,
   Loader2,
-  LogOut,
-  Radio,
   RefreshCw,
   Save,
   Sparkles,
   Trash2,
   Upload,
 } from 'lucide-react'
-import { API_BASE_URL, apiRequest } from '../services/api'
+import AppHeader from '../components/AppHeader'
+import { apiRequest } from '../services/api'
 
 const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed']
 
@@ -183,38 +182,17 @@ function QuizBuilderPage({ user, onLogout, onNavigate }) {
 
   return (
     <main className="app-shell">
-      <header className="topbar">
-        <div className="brand-block">
-          <h1>QuizForge AI</h1>
-          <p className="signature-line">Craft smarter quizzes, faster.</p>
-        </div>
-        <div className="topbar-actions">
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('quizzes')}>
-            <BookOpen size={16} />
-            Quizzes
-          </button>
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('host')}>
-            <Radio size={16} />
-            Host
-          </button>
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('join')}>
-            Join
-          </button>
-          <div className="user-chip">
-            <span>{user?.name || 'Creator'}</span>
-            <strong>{user?.email}</strong>
-          </div>
-          <button className="icon-text-button" type="button" onClick={onLogout}>
-            <LogOut size={16} />
-            Logout
-          </button>
-          <div className="status-strip" aria-live="polite">
-            {error && <span className="status error">{error}</span>}
-            {!error && notice && <span className="status success">{notice}</span>}
-            {!error && !notice && <span className="status">Backend: {API_BASE_URL}</span>}
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        activePage="quizzes"
+        title="Quiz workspace"
+        subtitle="Create a new quiz or open one from your library."
+        user={user}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      >
+        {error && <span className="status error">{error}</span>}
+        {!error && notice && <span className="status success">{notice}</span>}
+      </AppHeader>
 
       <section className="workspace">
         <aside className="control-panel">

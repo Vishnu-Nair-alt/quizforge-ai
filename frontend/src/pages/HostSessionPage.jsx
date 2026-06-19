@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { BookOpen, Copy, Loader2, LogOut, Play, Radio, RefreshCw, Square, Users } from 'lucide-react'
+import { Copy, Loader2, Play, Radio, RefreshCw, Square, Users } from 'lucide-react'
+import AppHeader from '../components/AppHeader'
 import { apiRequest } from '../services/api'
 import { sessionApi } from '../services/sessionApi'
 
@@ -77,25 +78,14 @@ function HostSessionPage({ user, onNavigate, onLogout }) {
 
   return (
     <main className="app-shell">
-      <header className="topbar simple-topbar">
-        <div className="brand-block">
-          <p className="eyebrow">Live quiz</p>
-          <h1>Host Session</h1>
-          <p className="signature-line">Choose a saved quiz and invite participants.</p>
-        </div>
-        <div className="topbar-actions">
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('quizzes')}>
-            <BookOpen size={16} /> Quizzes
-          </button>
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('join')}>
-            Join
-          </button>
-          <div className="user-chip"><span>{user.name}</span><strong>{user.email}</strong></div>
-          <button className="icon-text-button" type="button" onClick={onLogout}>
-            <LogOut size={16} /> Logout
-          </button>
-        </div>
-      </header>
+      <AppHeader
+        activePage="host"
+        title="Host a live session"
+        subtitle="Choose a saved quiz and invite participants."
+        user={user}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
 
       <section className="simple-page">
         {error && <p className="status error">{error}</p>}

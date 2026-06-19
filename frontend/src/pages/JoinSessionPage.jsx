@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Check, Loader2, LogOut, Radio, RefreshCw, Send } from 'lucide-react'
+import { Check, Loader2, Radio, RefreshCw, Send } from 'lucide-react'
+import AppHeader from '../components/AppHeader'
 import { sessionApi } from '../services/sessionApi'
 
 function JoinSessionPage({ user, onNavigate, onLogout }) {
@@ -86,19 +87,14 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
 
   return (
     <main className="app-shell">
-      <header className="topbar simple-topbar">
-        <div className="brand-block">
-          <p className="eyebrow">Live quiz</p>
-          <h1>Join Session</h1>
-          <p className="signature-line">Enter a session code and display name.</p>
-        </div>
-        <div className="topbar-actions">
-          <button className="icon-text-button" type="button" onClick={() => onNavigate('quizzes')}>
-            <ArrowLeft size={16} /> {user ? 'Back to quizzes' : 'Back to login'}
-          </button>
-          {user && <button className="icon-text-button" type="button" onClick={onLogout}><LogOut size={16} /> Logout</button>}
-        </div>
-      </header>
+      <AppHeader
+        activePage="join"
+        title="Join a live session"
+        subtitle="Enter a session code and display name."
+        user={user}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
 
       <section className="simple-page">
         {error && <p className="status error">{error}</p>}

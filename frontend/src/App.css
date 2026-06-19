@@ -1069,3 +1069,270 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* Shared application navigation */
+.app-header {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 18px 32px 22px;
+}
+
+.app-nav {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 68px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 30px rgba(23, 33, 38, 0.06);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-brand > span:last-child,
+.account-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-brand strong {
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.app-brand small,
+.account-copy small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+}
+
+.brand-mark,
+.account-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.page-tabs {
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  gap: 4px;
+  border: 1px solid #e4eaeb;
+  border-radius: 11px;
+  padding: 4px;
+  background: #f4f7f7;
+}
+
+.page-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.page-tabs button:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.page-tabs button.active {
+  background: #fff;
+  color: var(--accent-strong);
+  box-shadow: 0 1px 5px rgba(23, 33, 38, 0.1);
+}
+
+.guest-nav {
+  border: 0;
+  background: transparent;
+}
+
+.account-menu {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 9px;
+  min-width: 0;
+}
+
+.account-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e5f0f0;
+  color: var(--accent-strong);
+  font-size: 13px;
+}
+
+.account-copy {
+  max-width: 150px;
+}
+
+.account-copy strong,
+.account-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-copy strong {
+  font-size: 12px;
+}
+
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  padding: 0 4px 0 13px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  color: #a33329;
+}
+
+.page-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 4px 0;
+}
+
+.page-heading h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.page-heading p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.page-heading-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1050px) {
+  .app-nav {
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+  }
+
+  .app-brand small,
+  .account-copy {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-header {
+    padding: 12px 16px 20px;
+  }
+
+  .app-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .app-brand {
+    flex: 1;
+  }
+
+  .page-tabs {
+    order: 3;
+    width: 100%;
+  }
+
+  .page-tabs button {
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .logout-button {
+    width: 36px;
+    padding: 0;
+    border: 0;
+  }
+
+  .logout-button span {
+    display: none;
+  }
+
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    padding-top: 22px;
+  }
+
+  .page-heading-status,
+  .page-heading-status .status {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-tabs button {
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .page-tabs button span {
+    max-width: 76px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -52,7 +52,7 @@ function App() {
     )
   }
 
-  if (page === 'join') {
+  if (!user && page === 'join') {
     return (
       <JoinSessionPage
         user={user}
@@ -62,22 +62,30 @@ function App() {
     )
   }
 
-  if (page === 'host') {
-    return (
-      <HostSessionPage
-        user={user}
-        onNavigate={setPage}
-        onLogout={handleLogout}
-      />
-    )
-  }
-
   return (
-    <QuizBuilderPage
-      user={user}
-      onLogout={handleLogout}
-      onNavigate={setPage}
-    />
+    <>
+      <div hidden={page !== 'quizzes'}>
+        <QuizBuilderPage
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={setPage}
+        />
+      </div>
+      <div hidden={page !== 'host'}>
+        <HostSessionPage
+          user={user}
+          onNavigate={setPage}
+          onLogout={handleLogout}
+        />
+      </div>
+      <div hidden={page !== 'join'}>
+        <JoinSessionPage
+          user={user}
+          onNavigate={setPage}
+          onLogout={handleLogout}
+        />
+      </div>
+    </>
   )
 }
 

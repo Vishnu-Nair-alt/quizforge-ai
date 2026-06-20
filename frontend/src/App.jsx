@@ -4,6 +4,7 @@ import LoginSignupPage from './pages/LoginSignupPage'
 import QuizBuilderPage from './pages/QuizBuilderPage'
 import HostSessionPage from './pages/HostSessionPage'
 import JoinSessionPage from './pages/JoinSessionPage'
+import SessionHistoryPage from './pages/SessionHistoryPage'
 import { apiRequest, clearSession, getStoredToken, getStoredUser } from './services/api'
 
 function App() {
@@ -80,6 +81,13 @@ function App() {
       </div>
       <div hidden={page !== 'join'}>
         <JoinSessionPage
+          user={user}
+          onNavigate={setPage}
+          onLogout={handleLogout}
+        />
+      </div>
+      <div hidden={page !== 'history'}>
+        <SessionHistoryPage
           user={user}
           onNavigate={setPage}
           onLogout={handleLogout}

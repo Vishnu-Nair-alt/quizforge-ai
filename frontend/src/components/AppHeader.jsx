@@ -1,8 +1,9 @@
-import { BookOpen, LogIn, LogOut, Radio, Users } from 'lucide-react'
+import { BookOpen, FileClock, LogIn, LogOut, Radio, Users } from 'lucide-react'
 
 const navigationItems = [
   { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
   { id: 'host', label: 'Host session', icon: Radio },
+  { id: 'history', label: 'History', icon: FileClock },
   { id: 'join', label: 'Join session', icon: Users },
 ]
 

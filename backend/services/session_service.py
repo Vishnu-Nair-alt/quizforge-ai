@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.schemas import SubmitAnswersRequest
+from schemas import SubmitAnswersRequest
 from models import Quiz, User, QuizSession, SessionParticipant, ParticipantAnswer
 
 

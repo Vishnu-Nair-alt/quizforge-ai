@@ -174,3 +174,63 @@ class SubmitAnswersRequest(BaseModel):
     participant_id: int
     participant_token: str
     answers: List[SubmittedAnswer]
+
+
+# V3.1 SESSION HISTORY + DETAILS
+class SessionHistoryItem(BaseModel):
+    session_id: int
+    quiz_id: int
+    quiz_title: str
+    session_code: str
+    status: str
+    created_at: datetime
+    started_at: Optional[datetime]
+    ended_at: Optional[datetime]
+    participant_count: int
+    submitted_count: int
+    total_questions: int
+    average_score: Optional[float]
+
+
+class SessionHistoryResponse(BaseModel):
+    sessions: List[SessionHistoryItem]
+
+
+class SessionAnswerDetail(BaseModel):
+    question_index: int
+    question: str
+    selected_answer: str
+    correct_answer: str
+    is_correct: bool
+
+
+class SessionParticipantDetail(BaseModel):
+    participant_id: int
+    user_id: Optional[int]
+    display_name: str
+    joined_at: datetime
+    has_submitted: bool
+    score: Optional[int]
+    correct_count: int
+    incorrect_count: int
+    unanswered_count: int
+    submitted_at: Optional[datetime]
+    answers: List[SessionAnswerDetail]
+
+
+class SessionDetailResponse(BaseModel):
+    session_id: int
+    quiz_id: int
+    quiz_title: str
+    quiz_filename: Optional[str]
+    difficulty: str
+    topic_focus: Optional[str]
+    total_questions: int
+    session_code: str
+    status: str
+    created_at: datetime
+    started_at: Optional[datetime]
+    ended_at: Optional[datetime]
+    participant_count: int
+    submitted_count: int
+    participants: List[SessionParticipantDetail]

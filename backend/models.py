@@ -66,6 +66,7 @@ class QuizSession(Base):
     quiz = relationship("Quiz")
     host = relationship("User")
     participants = relationship("SessionParticipant", back_populates="session")
+    answers = relationship("ParticipantAnswer", back_populates="session")
 
 
 class SessionParticipant(Base):

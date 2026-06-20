@@ -109,3 +109,4 @@ class ParticipantAnswer(Base):
     is_correct = Column(Boolean, nullable=False)
 
     participant = relationship("SessionParticipant", back_populates="answers")
+    session = relationship("QuizSession", back_populates="answers")

@@ -134,17 +134,6 @@ class SafeQuizResponse(BaseModel):
     questions: List[SafeQuestionItem]
 
 
-class AnswerSubmissionItem(BaseModel):
-    question_index: int
-    selected_answer: str
-
-
-class SubmitAnswersRequest(BaseModel):
-    participant_id: int
-    participant_token: str
-    answers: List[AnswerSubmissionItem]
-
-
 class SubmitAnswersResponse(BaseModel):
     participant_id: int
     display_name: str
@@ -176,3 +165,12 @@ class HostResultsResponse(BaseModel):
     status: str
     quiz_title: str
     results: List[HostResultItem]
+
+class SubmittedAnswer(BaseModel):
+    question_index: int
+    selected_answer: str
+
+class SubmitAnswersRequest(BaseModel):
+    participant_id: int
+    participant_token: str
+    answers: List[SubmittedAnswer]

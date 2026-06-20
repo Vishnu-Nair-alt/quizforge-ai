@@ -4,6 +4,7 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from backend.schemas import SubmitAnswersRequest
 from models import Quiz, User, QuizSession, SessionParticipant, ParticipantAnswer
 
 
@@ -325,7 +326,7 @@ def normalize_answer(answer: str) -> str:
     return answer.strip().lower()
 
 
-def submit_answers(db: Session, session_code: str, request):
+def submit_answers(db: Session, session_code: str, request: SubmitAnswersRequest):
     session = get_session_by_code(db, session_code)
 
     if session.status != "active":

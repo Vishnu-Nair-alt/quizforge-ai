@@ -47,6 +47,16 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     }
   }, [isActive])
 
+  useEffect(() => {
+    if (!notice) return
+
+    const timer = window.setTimeout(() => {
+      setNotice('')
+    }, 5000)
+
+    return () => window.clearTimeout(timer)
+  }, [notice])
+
   async function loadHistory() {
     setLoading('list')
     setError('')

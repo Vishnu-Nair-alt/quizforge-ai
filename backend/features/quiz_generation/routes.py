@@ -10,7 +10,7 @@ import re
 from schemas import GenerateQuizRequest, QuizGenerationResponse, SaveQuizRequest
 from database import get_db
 from models import Quiz, UploadedDocument, User
-from services.auth_service import get_current_user
+from features.auth.service import get_current_user
 
 
 router = APIRouter()

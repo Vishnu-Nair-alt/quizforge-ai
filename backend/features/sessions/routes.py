@@ -6,6 +6,7 @@ from models import User
 from schemas import (
     CreateSessionRequest,
     CreateSessionResponse,
+    CurrentHostSessionResponse,
     PublicSessionStatusResponse,
     JoinSessionRequest,
     JoinSessionResponse,
@@ -18,9 +19,10 @@ from schemas import (
     MyResultResponse,
     HostResultsResponse
 )
-from services.auth_service import get_current_user, get_optional_current_user
-from services.session_service import (
+from features.auth.service import get_current_user, get_optional_current_user
+from features.sessions.service import (
     create_quiz_session,
+    get_current_host_session,
     get_public_session_status,
     get_host_lobby,
     join_session,
@@ -43,6 +45,14 @@ def create_session(
     current_user: User = Depends(get_current_user)
 ):
     return create_quiz_session(db, request.quiz_id, current_user)
+
+
+@session_router.get("/current-host", response_model=CurrentHostSessionResponse)
+def current_host_session(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return get_current_host_session(db, current_user)
 
 
 @session_router.get("/{session_code}/status", response_model=PublicSessionStatusResponse)

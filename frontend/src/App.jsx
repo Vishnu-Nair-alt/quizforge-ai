@@ -4,7 +4,7 @@ import LoginSignupPage from './pages/LoginSignupPage'
 import QuizBuilderPage from './pages/QuizBuilderPage'
 import HostSessionPage from './pages/HostSessionPage'
 import JoinSessionPage from './pages/JoinSessionPage'
-import SessionHistoryPage from './pages/SessionHistoryPage'
+import SessionHistoryPage from './pages/SessionHistoryPage/SessionHistoryPage'
 import { apiRequest, clearSession, getStoredToken, getStoredUser } from './services/api'
 
 function App() {

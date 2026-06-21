@@ -1507,6 +1507,62 @@ button:focus-visible {
   background: #fff2f0;
 }
 
+.participant-answer-details {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.participant-answer-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 11px;
+  background: #f8fafb;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.participant-answer-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.participant-answer-details summary > span {
+  display: grid;
+  gap: 2px;
+}
+
+.participant-answer-details summary small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.participant-answer-details summary svg {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 0.18s ease;
+}
+
+.participant-answer-details[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.participant-answer-details[open] summary {
+  border-color: #9bbfc0;
+  background: #f2f8f8;
+}
+
+.participant-answer-details .answer-detail-list {
+  margin-top: 10px;
+}
+
 .answer-detail {
   display: flex;
   align-items: flex-start;

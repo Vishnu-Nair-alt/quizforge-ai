@@ -10,7 +10,7 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
   const [session, setSession] = useState(null)
   const [lobby, setLobby] = useState(null)
   const [results, setResults] = useState([])
-  const [loading, setLoading] = useState('quizzes')
+  const [loading, setLoading] = useState('restore')
   const [error, setError] = useState('')
   const sessionCode = session?.session_code
 
@@ -19,10 +19,28 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
 
     let cancelled = false
 
-    apiRequest('/quizzes')
-      .then((data) => {
+    sessionApi.currentHost()
+      .then(async (data) => {
         if (cancelled) return
-        setQuizzes(data.quizzes || [])
+
+        if (data.session) {
+          const lobbyData = await sessionApi.lobby(data.session.session_code)
+          if (cancelled) return
+
+          setSession(data.session)
+          setLobby(lobbyData)
+          setError('')
+
+          if (data.session.status !== 'waiting') {
+            const resultData = await sessionApi.results(data.session.session_code)
+            if (!cancelled) setResults(resultData.results || [])
+          }
+          return
+        }
+
+        const quizData = await apiRequest('/quizzes')
+        if (cancelled) return
+        setQuizzes(quizData.quizzes || [])
         setError('')
       })
       .catch((err) => {
@@ -120,8 +138,8 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
             <Radio size={28} />
             <h2>Create a session</h2>
             <p>Select one of your saved quizzes.</p>
-            {loading === 'quizzes' ? (
-              <p><Loader2 className="spin" size={17} /> Loading quizzes...</p>
+            {loading === 'restore' ? (
+              <p><Loader2 className="spin" size={17} /> Checking for an open session...</p>
             ) : quizzes.length ? (
               <>
                 <label>

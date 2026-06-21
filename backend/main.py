@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from database import Base, engine
 
-from routes.quizGen import router as api_router
-from routes.login_signup import auth_router
-from routes.session_routes import session_router
-from routes.session_history_routes import session_history_router
+from features.quiz_generation.routes import router as api_router
+from features.auth.routes import auth_router
+from features.sessions.routes import session_router
+from features.session_history.routes import session_history_router
+from features.host_ai_analysis.routes import host_ai_analysis_router
 
 # Load .env before importing router if router uses os.getenv()
 load_dotenv()
@@ -44,5 +45,6 @@ app.include_router(auth_router)
 app.include_router(api_router)
 app.include_router(session_router)
 app.include_router(session_history_router)
+app.include_router(host_ai_analysis_router)
 
 

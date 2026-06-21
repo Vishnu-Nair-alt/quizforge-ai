@@ -66,6 +66,24 @@ def ensure_session_host(session: QuizSession, current_user: User):
 
 
 def create_quiz_session(db: Session, quiz_id: int, current_user: User):
+    existing_session = (
+        db.query(QuizSession)
+        .filter(
+            QuizSession.host_user_id == current_user.id,
+            QuizSession.status.in_(["waiting", "active"])
+        )
+        .order_by(QuizSession.created_at.desc())
+        .first()
+    )
+
+    if existing_session is not None:
+        return {
+            "session_id": existing_session.id,
+            "quiz_id": existing_session.quiz_id,
+            "session_code": existing_session.session_code,
+            "status": existing_session.status
+        }
+
     quiz = (
         db.query(Quiz)
         .filter(
@@ -99,6 +117,30 @@ def create_quiz_session(db: Session, quiz_id: int, current_user: User):
         "quiz_id": new_session.quiz_id,
         "session_code": new_session.session_code,
         "status": new_session.status
+    }
+
+
+def get_current_host_session(db: Session, current_user: User):
+    session = (
+        db.query(QuizSession)
+        .filter(
+            QuizSession.host_user_id == current_user.id,
+            QuizSession.status.in_(["waiting", "active"])
+        )
+        .order_by(QuizSession.created_at.desc())
+        .first()
+    )
+
+    if session is None:
+        return {"session": None}
+
+    return {
+        "session": {
+            "session_id": session.id,
+            "quiz_id": session.quiz_id,
+            "session_code": session.session_code,
+            "status": session.status
+        }
     }
 
 

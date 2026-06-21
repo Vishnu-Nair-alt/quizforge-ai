@@ -73,6 +73,10 @@ class CreateSessionResponse(BaseModel):
     status: str
 
 
+class CurrentHostSessionResponse(BaseModel):
+    session: Optional[CreateSessionResponse] = None
+
+
 class PublicSessionStatusResponse(BaseModel):
     session_code: str
     status: str

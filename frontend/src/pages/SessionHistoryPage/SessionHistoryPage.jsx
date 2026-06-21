@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronDown,
   Download,
   FileClock,
   Loader2,
@@ -9,8 +10,9 @@ import {
   Trash2,
   XCircle,
 } from 'lucide-react'
-import AppHeader from '../components/AppHeader'
-import { sessionHistoryApi } from '../services/sessionHistoryApi'
+import AppHeader from '../../components/AppHeader'
+import HostAIAnalysis from './HostAIAnalysis'
+import { sessionHistoryApi } from '../../services/sessionHistoryApi'
 
 function formatDate(value) {
   if (!value) return '—'
@@ -179,6 +181,12 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
               </div>
             </div>
 
+            <HostAIAnalysis
+              key={detail.session_id}
+              sessionId={detail.session_id}
+              submittedCount={detail.submitted_count}
+            />
+
             {!detail.participants.length ? (
               <div className="simple-card">
                 <p className="empty-copy">No participants joined this session.</p>
@@ -205,18 +213,27 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                       <span>Submitted {formatDate(participant.submitted_at)}</span>
                     </div>
                     {participant.answers.length > 0 && (
-                      <div className="answer-detail-list">
-                        {participant.answers.map((answer) => (
-                          <div className={answer.is_correct ? 'answer-detail correct' : 'answer-detail incorrect'} key={answer.question_index}>
-                            {answer.is_correct ? <CheckCircle2 size={17} /> : <XCircle size={17} />}
-                            <div>
-                              <strong>Q{answer.question_index + 1}. {answer.question}</strong>
-                              <span>Selected: {answer.selected_answer}</span>
-                              {!answer.is_correct && <span>Correct: {answer.correct_answer}</span>}
+                      <details className="participant-answer-details">
+                        <summary>
+                          <span>
+                            View answer details
+                            <small>{participant.answers.length} answered questions</small>
+                          </span>
+                          <ChevronDown size={18} />
+                        </summary>
+                        <div className="answer-detail-list">
+                          {participant.answers.map((answer) => (
+                            <div className={answer.is_correct ? 'answer-detail correct' : 'answer-detail incorrect'} key={answer.question_index}>
+                              {answer.is_correct ? <CheckCircle2 size={17} /> : <XCircle size={17} />}
+                              <div>
+                                <strong>Q{answer.question_index + 1}. {answer.question}</strong>
+                                <span>Selected: {answer.selected_answer}</span>
+                                {!answer.is_correct && <span>Correct: {answer.correct_answer}</span>}
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      </details>
                     )}
                   </article>
                 ))}

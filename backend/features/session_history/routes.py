@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import User
-from services.auth_service import get_current_user
-from services.session_history_service import (
+from features.auth.service import get_current_user
+from features.session_history.service import (
     create_session_results_csv,
     delete_owner_session,
     get_owner_session_detail,

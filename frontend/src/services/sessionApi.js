@@ -8,6 +8,9 @@ function participantParams(participant) {
 }
 
 export const sessionApi = {
+  currentHost() {
+    return apiRequest('/sessions/current-host')
+  },
   create(quizId) {
     return apiRequest('/sessions', {
       method: 'POST',

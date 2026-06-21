@@ -9,6 +9,7 @@ from models import User
 from services.auth_service import get_current_user
 from services.session_history_service import (
     create_session_results_csv,
+    delete_owner_session,
     get_owner_session_detail,
     get_owner_session_history,
 )
@@ -42,6 +43,15 @@ def get_session_history_detail(
     current_user: User = Depends(get_current_user),
 ):
     return get_owner_session_detail(db, session_code, current_user)
+
+
+@session_history_router.delete("/{session_code}")
+def delete_session_history(
+    session_code: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return delete_owner_session(db, session_code, current_user)
 
 
 @session_history_router.get("/{session_code}/export")

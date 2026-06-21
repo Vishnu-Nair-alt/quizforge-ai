@@ -169,6 +169,33 @@ def get_owner_session_detail(
     }
 
 
+def delete_owner_session(
+    db: Session,
+    session_code: str,
+    current_user: User,
+):
+    session = get_owned_session(db, session_code, current_user)
+    deleted_session_code = session.session_code
+
+    try:
+        db.query(ParticipantAnswer).filter(
+            ParticipantAnswer.session_id == session.id,
+        ).delete(synchronize_session=False)
+        db.query(SessionParticipant).filter(
+            SessionParticipant.session_id == session.id,
+        ).delete(synchronize_session=False)
+        db.delete(session)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    return {
+        "session_code": deleted_session_code,
+        "message": "Session history deleted successfully.",
+    }
+
+
 def csv_safe(value):
     if value is None:
         return ""

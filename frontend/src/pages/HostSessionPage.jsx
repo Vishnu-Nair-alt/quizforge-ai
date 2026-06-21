@@ -4,7 +4,7 @@ import AppHeader from '../components/AppHeader'
 import { apiRequest } from '../services/api'
 import { sessionApi } from '../services/sessionApi'
 
-function HostSessionPage({ user, onNavigate, onLogout }) {
+function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
   const [quizzes, setQuizzes] = useState([])
   const [quizId, setQuizId] = useState('')
   const [session, setSession] = useState(null)
@@ -15,11 +15,27 @@ function HostSessionPage({ user, onNavigate, onLogout }) {
   const sessionCode = session?.session_code
 
   useEffect(() => {
+    if (!isActive || session) return
+
+    let cancelled = false
+
     apiRequest('/quizzes')
-      .then((data) => setQuizzes(data.quizzes || []))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(''))
-  }, [])
+      .then((data) => {
+        if (cancelled) return
+        setQuizzes(data.quizzes || [])
+        setError('')
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading('')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isActive, session])
 
   const refreshSession = useCallback(async () => {
     if (!sessionCode) return

@@ -74,6 +74,7 @@ function App() {
       </div>
       <div hidden={page !== 'host'}>
         <HostSessionPage
+          isActive={page === 'host'}
           user={user}
           onNavigate={setPage}
           onLogout={handleLogout}
@@ -88,6 +89,7 @@ function App() {
       </div>
       <div hidden={page !== 'history'}>
         <SessionHistoryPage
+          isActive={page === 'history'}
           user={user}
           onNavigate={setPage}
           onLogout={handleLogout}

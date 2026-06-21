@@ -17,7 +17,7 @@ function formatDate(value) {
   return new Date(value).toLocaleString()
 }
 
-function SessionHistoryPage({ user, onNavigate, onLogout }) {
+function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
   const [sessions, setSessions] = useState([])
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState('list')
@@ -25,8 +25,27 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
-    loadHistory()
-  }, [])
+    if (!isActive) return
+
+    let cancelled = false
+
+    sessionHistoryApi.list()
+      .then((data) => {
+        if (cancelled) return
+        setSessions(data.sessions || [])
+        setError('')
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading('')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isActive])
 
   async function loadHistory() {
     setLoading('list')

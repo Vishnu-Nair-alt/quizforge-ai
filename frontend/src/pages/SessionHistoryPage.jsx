@@ -6,6 +6,7 @@ import {
   FileClock,
   Loader2,
   RefreshCw,
+  Trash2,
   XCircle,
 } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
@@ -21,6 +22,7 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState('list')
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
 
   useEffect(() => {
     loadHistory()
@@ -42,6 +44,7 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
   async function openSession(sessionCode) {
     setLoading(`detail-${sessionCode}`)
     setError('')
+    setNotice('')
     try {
       setDetail(await sessionHistoryApi.detail(sessionCode))
     } catch (err) {
@@ -64,6 +67,32 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
     }
   }
 
+  async function deleteSession(session) {
+    const confirmed = window.confirm(
+      `Delete session ${session.session_code} and all of its participant results? This cannot be undone.`,
+    )
+    if (!confirmed) return
+
+    setLoading(`delete-${session.session_code}`)
+    setError('')
+    setNotice('')
+
+    try {
+      await sessionHistoryApi.delete(session.session_code)
+      setSessions((current) =>
+        current.filter((item) => item.session_id !== session.session_id),
+      )
+      if (detail?.session_id === session.session_id) {
+        setDetail(null)
+      }
+      setNotice(`Session ${session.session_code} deleted.`)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading('')
+    }
+  }
+
   return (
     <main className="app-shell">
       <AppHeader
@@ -77,6 +106,7 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
 
       <section className="simple-page history-page">
         {error && <p className="status error">{error}</p>}
+        {notice && <p className="status success">{notice}</p>}
 
         {detail ? (
           <>
@@ -84,10 +114,26 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
               <button className="icon-text-button" type="button" onClick={() => setDetail(null)}>
                 <ArrowLeft size={16} /> All sessions
               </button>
-              <button className="primary-button export-button" type="button" onClick={exportReport} disabled={loading === 'export'}>
-                {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
-                Export CSV
-              </button>
+              <div className="history-detail-actions">
+                <button
+                  className="icon-button danger"
+                  type="button"
+                  onClick={() => deleteSession(detail)}
+                  disabled={loading === `delete-${detail.session_code}`}
+                  aria-label={`Delete session ${detail.session_code}`}
+                  title="Delete session history"
+                >
+                  {loading === `delete-${detail.session_code}` ? (
+                    <Loader2 className="spin" size={17} />
+                  ) : (
+                    <Trash2 size={17} />
+                  )}
+                </button>
+                <button className="primary-button export-button" type="button" onClick={exportReport} disabled={loading === 'export'}>
+                  {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
+                  Export CSV
+                </button>
+              </div>
             </div>
 
             <div className="simple-card history-summary">
@@ -167,16 +213,32 @@ function SessionHistoryPage({ user, onNavigate, onLogout }) {
             ) : (
               <div className="session-history-list">
                 {sessions.map((session) => (
-                  <button type="button" onClick={() => openSession(session.session_code)} key={session.session_id}>
-                    <FileClock size={20} />
-                    <span>
-                      <strong>{session.quiz_title}</strong>
-                      <small>{session.session_code} · {formatDate(session.created_at)}</small>
-                    </span>
-                    <span>{session.submitted_count}/{session.participant_count} submitted</span>
-                    <span className={`session-status ${session.status}`}>{session.status}</span>
-                    {loading === `detail-${session.session_code}` && <Loader2 className="spin" size={17} />}
-                  </button>
+                  <div className="session-history-item" key={session.session_id}>
+                    <button type="button" onClick={() => openSession(session.session_code)}>
+                      <FileClock size={20} />
+                      <span>
+                        <strong>{session.quiz_title}</strong>
+                        <small>{session.session_code} · {formatDate(session.created_at)}</small>
+                      </span>
+                      <span>{session.submitted_count}/{session.participant_count} submitted</span>
+                      <span className={`session-status ${session.status}`}>{session.status}</span>
+                      {loading === `detail-${session.session_code}` && <Loader2 className="spin" size={17} />}
+                    </button>
+                    <button
+                      className="icon-button danger"
+                      type="button"
+                      onClick={() => deleteSession(session)}
+                      disabled={loading === `delete-${session.session_code}`}
+                      aria-label={`Delete session ${session.session_code}`}
+                      title="Delete session history"
+                    >
+                      {loading === `delete-${session.session_code}` ? (
+                        <Loader2 className="spin" size={16} />
+                      ) : (
+                        <Trash2 size={16} />
+                      )}
+                    </button>
+                  </div>
                 ))}
               </div>
             )}

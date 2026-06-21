@@ -7,6 +7,11 @@ export const sessionHistoryApi = {
   detail(sessionCode) {
     return apiRequest(`/session-history/${sessionCode}`)
   },
+  delete(sessionCode) {
+    return apiRequest(`/session-history/${sessionCode}`, {
+      method: 'DELETE',
+    })
+  },
   async download(sessionCode) {
     const response = await fetch(
       `${API_BASE_URL}/session-history/${sessionCode}/export`,

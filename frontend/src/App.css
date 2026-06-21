@@ -1365,6 +1365,12 @@ button:focus-visible {
   justify-content: space-between;
 }
 
+.history-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .export-button {
   padding: 0 15px;
 }
@@ -1420,7 +1426,14 @@ button:focus-visible {
   margin-top: 16px;
 }
 
-.session-history-list > button {
+.session-history-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-history-item > button:first-child {
   display: grid;
   grid-template-columns: auto minmax(180px, 1fr) auto auto auto;
   align-items: center;
@@ -1436,16 +1449,16 @@ button:focus-visible {
   cursor: pointer;
 }
 
-.session-history-list > button:hover {
+.session-history-item > button:first-child:hover {
   border-color: #9bbfc0;
   background: #f8fbfb;
 }
 
-.session-history-list > button > svg:first-child {
+.session-history-item > button:first-child > svg:first-child {
   color: var(--accent);
 }
 
-.session-history-list > button > span:nth-child(2) {
+.session-history-item > button:first-child > span:nth-child(2) {
   display: grid;
   gap: 3px;
 }
@@ -1537,12 +1550,12 @@ button:focus-visible {
 }
 
 @media (max-width: 760px) {
-  .session-history-list > button {
+  .session-history-item > button:first-child {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .session-history-list > button > span:nth-child(n + 3),
-  .session-history-list > button > svg:last-child {
+  .session-history-item > button:first-child > span:nth-child(n + 3),
+  .session-history-item > button:first-child > svg:last-child {
     grid-column: 2;
   }
 

@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from features.auth.service import get_current_user
+from features.host_ai_analysis.schemas import ParticipantAIAnalysisResponse
+from features.host_ai_analysis.service import get_participant_ai_analysis
 from features.session_history.service import (
     create_session_results_csv,
     delete_owner_session,
@@ -54,6 +56,18 @@ def get_joined_session_history_detail(
     current_user: User = Depends(get_current_user),
 ):
     return get_joined_session_detail(db, session_code, current_user)
+
+
+@session_history_router.get(
+    "/joined/{session_code}/ai-analysis",
+    response_model=ParticipantAIAnalysisResponse,
+)
+def get_joined_session_ai_analysis(
+    session_code: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_participant_ai_analysis(db, session_code, current_user)
 
 
 @session_history_router.get(

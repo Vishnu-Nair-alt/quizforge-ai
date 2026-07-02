@@ -44,3 +44,45 @@ class HostAIAnalysisResponse(HostAIInterpretation):
     submitted_count: int
     average_score: float
     question_stats: List[HostAIQuestionStat]
+
+
+class ParticipantAIQuestionReview(BaseModel):
+    question_index: int
+    outcome: str
+    review: str
+    next_step: str
+
+
+class ParticipantAIInterpretation(BaseModel):
+    overall_summary: str
+    performance_level: str
+    weak_areas: List[str]
+    strong_areas: List[str]
+    likely_misconceptions: List[str]
+    what_to_learn_next: List[str]
+    practice_recommendations: List[str]
+    question_reviews: List[ParticipantAIQuestionReview]
+
+
+class ParticipantAIAnswerEvidence(BaseModel):
+    question_index: int
+    question: str
+    selected_answer: str
+    correct_answer: str
+    is_correct: bool
+    explanation: str
+
+
+class ParticipantAIAnalysisResponse(ParticipantAIInterpretation):
+    session_id: int
+    quiz_title: str
+    participant_display_name: str
+    total_questions: int
+    score: int
+    correct_count: int
+    incorrect_count: int
+    unanswered_count: int
+    submitted_count: int
+    participant_count: int
+    class_average_score: float
+    answer_evidence: List[ParticipantAIAnswerEvidence]

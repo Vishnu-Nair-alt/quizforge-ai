@@ -200,6 +200,29 @@ class SessionHistoryResponse(BaseModel):
     sessions: List[SessionHistoryItem]
 
 
+class JoinedSessionHistoryItem(BaseModel):
+    session_id: int
+    quiz_id: int
+    quiz_title: str
+    session_code: str
+    status: str
+    created_at: datetime
+    joined_at: datetime
+    submitted_at: Optional[datetime]
+    participant_count: int
+    submitted_count: int
+    total_questions: int
+    has_submitted: bool
+    score: Optional[int]
+    correct_count: int
+    incorrect_count: int
+    unanswered_count: int
+
+
+class JoinedSessionHistoryResponse(BaseModel):
+    sessions: List[JoinedSessionHistoryItem]
+
+
 class SessionAnswerDetail(BaseModel):
     question_index: int
     question: str

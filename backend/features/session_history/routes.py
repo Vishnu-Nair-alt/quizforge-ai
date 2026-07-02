@@ -10,10 +10,13 @@ from features.auth.service import get_current_user
 from features.session_history.service import (
     create_session_results_csv,
     delete_owner_session,
+    get_joined_session_detail,
+    get_joined_session_history,
     get_owner_session_detail,
     get_owner_session_history,
 )
 from schemas import (
+    JoinedSessionHistoryResponse,
     SessionDetailResponse,
     SessionHistoryResponse,
 )
@@ -31,6 +34,26 @@ def list_session_history(
     current_user: User = Depends(get_current_user),
 ):
     return get_owner_session_history(db, current_user)
+
+
+@session_history_router.get("/joined", response_model=JoinedSessionHistoryResponse)
+def list_joined_session_history(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_joined_session_history(db, current_user)
+
+
+@session_history_router.get(
+    "/joined/{session_code}",
+    response_model=SessionDetailResponse,
+)
+def get_joined_session_history_detail(
+    session_code: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_joined_session_detail(db, session_code, current_user)
 
 
 @session_history_router.get(

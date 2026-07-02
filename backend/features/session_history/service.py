@@ -82,6 +82,112 @@ def get_owner_session_history(db: Session, current_user: User):
     return {"sessions": history}
 
 
+def get_joined_session_history(db: Session, current_user: User):
+    participants = (
+        db.query(SessionParticipant)
+        .join(QuizSession, SessionParticipant.session_id == QuizSession.id)
+        .filter(SessionParticipant.user_id == current_user.id)
+        .order_by(SessionParticipant.joined_at.desc())
+        .all()
+    )
+
+    history = []
+
+    for participant in participants:
+        session = participant.session
+        participant_detail = build_participant_detail(db, participant, session.quiz.questions)
+        participant_count = (
+            db.query(SessionParticipant)
+            .filter(SessionParticipant.session_id == session.id)
+            .count()
+        )
+        submitted_count = (
+            db.query(SessionParticipant)
+            .filter(
+                SessionParticipant.session_id == session.id,
+                SessionParticipant.has_submitted == True,
+            )
+            .count()
+        )
+
+        history.append({
+            "session_id": session.id,
+            "quiz_id": session.quiz_id,
+            "quiz_title": session.quiz.title,
+            "session_code": session.session_code,
+            "status": session.status,
+            "created_at": session.created_at,
+            "joined_at": participant.joined_at,
+            "submitted_at": participant.submitted_at,
+            "participant_count": participant_count,
+            "submitted_count": submitted_count,
+            "total_questions": len(session.quiz.questions),
+            "has_submitted": participant.has_submitted,
+            "score": participant.score,
+            "correct_count": participant_detail["correct_count"],
+            "incorrect_count": participant_detail["incorrect_count"],
+            "unanswered_count": participant_detail["unanswered_count"],
+        })
+
+    return {"sessions": history}
+
+
+def get_joined_session_detail(
+    db: Session,
+    session_code: str,
+    current_user: User,
+):
+    participant = (
+        db.query(SessionParticipant)
+        .join(QuizSession, SessionParticipant.session_id == QuizSession.id)
+        .filter(
+            SessionParticipant.user_id == current_user.id,
+            QuizSession.session_code == session_code.upper(),
+        )
+        .first()
+    )
+
+    if participant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found or not joined by the current user.",
+        )
+
+    session = participant.session
+    participant_detail = build_participant_detail(db, participant, session.quiz.questions)
+    participant_count = (
+        db.query(SessionParticipant)
+        .filter(SessionParticipant.session_id == session.id)
+        .count()
+    )
+    submitted_count = (
+        db.query(SessionParticipant)
+        .filter(
+            SessionParticipant.session_id == session.id,
+            SessionParticipant.has_submitted == True,
+        )
+        .count()
+    )
+
+    return {
+        "session_id": session.id,
+        "quiz_id": session.quiz_id,
+        "quiz_title": session.quiz.title,
+        "quiz_filename": session.quiz.filename,
+        "difficulty": session.quiz.difficulty,
+        "topic_focus": session.quiz.topic_focus,
+        "total_questions": len(session.quiz.questions),
+        "session_code": session.session_code,
+        "status": session.status,
+        "created_at": session.created_at,
+        "started_at": session.started_at,
+        "ended_at": session.ended_at,
+        "participant_count": participant_count,
+        "submitted_count": submitted_count,
+        "participants": [participant_detail],
+    }
+
+
 def build_participant_detail(
     db: Session,
     participant: SessionParticipant,

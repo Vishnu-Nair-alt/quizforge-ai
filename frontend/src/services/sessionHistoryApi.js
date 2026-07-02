@@ -13,6 +13,9 @@ export const sessionHistoryApi = {
   detailJoined(sessionCode) {
     return apiRequest(`/session-history/joined/${sessionCode}`)
   },
+  joinedAIAnalysis(sessionCode) {
+    return apiRequest(`/session-history/joined/${sessionCode}/ai-analysis`)
+  },
   delete(sessionCode) {
     return apiRequest(`/session-history/${sessionCode}`, {
       method: 'DELETE',

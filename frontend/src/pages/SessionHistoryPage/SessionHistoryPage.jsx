@@ -52,10 +52,6 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
   }, [isActive, mode])
 
   useEffect(() => {
-    setDetail(null)
-  }, [mode])
-
-  useEffect(() => {
     if (!notice) return
 
     const timer = window.setTimeout(() => {
@@ -79,6 +75,12 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     } finally {
       setLoading('')
     }
+  }
+
+  function switchMode(nextMode) {
+    if (nextMode === mode) return
+    setMode(nextMode)
+    setDetail(null)
   }
 
   async function openSession(sessionCode) {
@@ -198,9 +200,12 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
             </div>
 
             <HostAIAnalysis
-              key={detail.session_id}
+              key={`${detail.historyMode}-${detail.session_id}`}
+              mode={detail.historyMode}
               sessionId={detail.session_id}
+              sessionCode={detail.session_code}
               submittedCount={detail.submitted_count}
+              hasSubmitted={detail.participants[0]?.has_submitted}
             />
 
             {!detail.participants.length ? (
@@ -267,14 +272,14 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                 <button
                   type="button"
                   className={`tab-button ${mode === 'hosted' ? 'active' : ''}`}
-                  onClick={() => setMode('hosted')}
+                  onClick={() => switchMode('hosted')}
                 >
                   Hosted
                 </button>
                 <button
                   type="button"
                   className={`tab-button ${mode === 'joined' ? 'active' : ''}`}
-                  onClick={() => setMode('joined')}
+                  onClick={() => switchMode('joined')}
                 >
                   Joined
                 </button>

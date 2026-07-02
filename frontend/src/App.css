@@ -1426,6 +1426,34 @@ button:focus-visible {
   margin-top: 16px;
 }
 
+.history-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.history-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: var(--surface);
+  color: var(--ink);
+}
+
 .session-history-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 34px;

@@ -4,8 +4,14 @@ export const sessionHistoryApi = {
   list() {
     return apiRequest('/session-history')
   },
+  listJoined() {
+    return apiRequest('/session-history/joined')
+  },
   detail(sessionCode) {
     return apiRequest(`/session-history/${sessionCode}`)
+  },
+  detailJoined(sessionCode) {
+    return apiRequest(`/session-history/joined/${sessionCode}`)
   },
   delete(sessionCode) {
     return apiRequest(`/session-history/${sessionCode}`, {

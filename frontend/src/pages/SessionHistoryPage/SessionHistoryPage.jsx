@@ -20,6 +20,7 @@ function formatDate(value) {
 }
 
 function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
+  const [mode, setMode] = useState('hosted')
   const [sessions, setSessions] = useState([])
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState('list')
@@ -30,8 +31,9 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     if (!isActive) return
 
     let cancelled = false
+    const loader = mode === 'hosted' ? sessionHistoryApi.list() : sessionHistoryApi.listJoined()
 
-    sessionHistoryApi.list()
+    loader
       .then((data) => {
         if (cancelled) return
         setSessions(data.sessions || [])
@@ -47,7 +49,11 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     return () => {
       cancelled = true
     }
-  }, [isActive])
+  }, [isActive, mode])
+
+  useEffect(() => {
+    setDetail(null)
+  }, [mode])
 
   useEffect(() => {
     if (!notice) return
@@ -62,8 +68,11 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
   async function loadHistory() {
     setLoading('list')
     setError('')
+    setDetail(null)
     try {
-      const data = await sessionHistoryApi.list()
+      const data = mode === 'hosted'
+        ? await sessionHistoryApi.list()
+        : await sessionHistoryApi.listJoined()
       setSessions(data.sessions || [])
     } catch (err) {
       setError(err.message)
@@ -77,7 +86,10 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     setError('')
     setNotice('')
     try {
-      setDetail(await sessionHistoryApi.detail(sessionCode))
+      const detailData = mode === 'hosted'
+        ? await sessionHistoryApi.detail(sessionCode)
+        : await sessionHistoryApi.detailJoined(sessionCode)
+      setDetail({ ...detailData, historyMode: mode })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -146,30 +158,31 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                 <ArrowLeft size={16} /> All sessions
               </button>
               <div className="history-detail-actions">
-                <button
-                  className="icon-button danger"
-                  type="button"
-                  onClick={() => deleteSession(detail)}
-                  disabled={loading === `delete-${detail.session_code}`}
-                  aria-label={`Delete session ${detail.session_code}`}
-                  title="Delete session history"
-                >
-                  {loading === `delete-${detail.session_code}` ? (
-                    <Loader2 className="spin" size={17} />
-                  ) : (
-                    <Trash2 size={17} />
-                  )}
-                </button>
-                <button className="primary-button export-button" type="button" onClick={exportReport} disabled={loading === 'export'}>
-                  {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
-                  Export CSV
-                </button>
-              </div>
-            </div>
-
-            <div className="simple-card history-summary">
-              <div>
-                <p className="eyebrow">Session {detail.session_code}</p>
+                {detail.historyMode === 'hosted' && (
+                  <button
+                    className="icon-button danger"
+                    type="button"
+                    onClick={() => deleteSession(detail)}
+                    disabled={loading === `delete-${detail.session_code}`}
+                    aria-label={`Delete session ${detail.session_code}`}
+                    title="Delete session history"
+                  >
+                    {loading === `delete-${detail.session_code}` ? (
+                      <Loader2 className="spin" size={17} />
+                    ) : (
+                      <Trash2 size={17} />
+                    )}
+                  </button>
+                )}
+                {detail.historyMode === 'hosted' && (
+                  <button className="primary-button export-button" type="button" onClick={exportReport} disabled={loading === 'export'}>
+                    {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
+                    Export CSV
+                  </button>
+                )}
+                <p className="eyebrow">
+                  {detail.historyMode === 'joined' ? 'Joined session' : 'Session'} {detail.session_code}
+                </p>
                 <h2>{detail.quiz_title}</h2>
                 <p>{detail.difficulty} · {detail.total_questions} questions</p>
               </div>
@@ -178,6 +191,9 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                 <span><strong>{detail.participant_count}</strong> Participants</span>
                 <span><strong>{detail.submitted_count}</strong> Submitted</span>
                 <span><strong>{formatDate(detail.created_at)}</strong> Created</span>
+                {detail.historyMode === 'joined' && detail.submitted_at && (
+                  <span><strong>{formatDate(detail.submitted_at)}</strong> My submission</span>
+                )}
               </div>
             </div>
 
@@ -242,20 +258,40 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
           </>
         ) : (
           <div className="simple-card">
-            <div className="simple-card-header">
+            <div className="simple-card-header history-list-header">
               <div>
-                <p className="eyebrow">Owner access</p>
-                <h2>Your hosted sessions</h2>
+                <p className="eyebrow">{mode === 'hosted' ? 'Owner access' : 'Joined sessions'}</p>
+                <h2>{mode === 'hosted' ? 'Your hosted sessions' : 'Sessions you joined'}</h2>
               </div>
-              <button className="icon-button" type="button" onClick={loadHistory} aria-label="Refresh history">
-                <RefreshCw size={17} />
-              </button>
+              <div className="history-filter-actions">
+                <button
+                  type="button"
+                  className={`tab-button ${mode === 'hosted' ? 'active' : ''}`}
+                  onClick={() => setMode('hosted')}
+                >
+                  Hosted
+                </button>
+                <button
+                  type="button"
+                  className={`tab-button ${mode === 'joined' ? 'active' : ''}`}
+                  onClick={() => setMode('joined')}
+                >
+                  Joined
+                </button>
+                <button className="icon-button" type="button" onClick={loadHistory} aria-label="Refresh history">
+                  <RefreshCw size={17} />
+                </button>
+              </div>
             </div>
 
             {loading === 'list' ? (
               <p className="history-loading"><Loader2 className="spin" size={18} /> Loading session history...</p>
             ) : !sessions.length ? (
-              <p className="empty-copy">No hosted sessions yet.</p>
+              <p className="empty-copy">
+                {mode === 'hosted'
+                  ? 'No hosted sessions yet.'
+                  : 'No joined sessions yet.'}
+              </p>
             ) : (
               <div className="session-history-list">
                 {sessions.map((session) => (
@@ -264,26 +300,31 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                       <FileClock size={20} />
                       <span>
                         <strong>{session.quiz_title}</strong>
-                        <small>{session.session_code} · {formatDate(session.created_at)}</small>
+                        <small>
+                          {session.session_code} · {formatDate(session.created_at)}
+                          {mode === 'joined' && session.joined_at ? ` · joined ${formatDate(session.joined_at)}` : ''}
+                        </small>
                       </span>
                       <span>{session.submitted_count}/{session.participant_count} submitted</span>
                       <span className={`session-status ${session.status}`}>{session.status}</span>
                       {loading === `detail-${session.session_code}` && <Loader2 className="spin" size={17} />}
                     </button>
-                    <button
-                      className="icon-button danger"
-                      type="button"
-                      onClick={() => deleteSession(session)}
-                      disabled={loading === `delete-${session.session_code}`}
-                      aria-label={`Delete session ${session.session_code}`}
-                      title="Delete session history"
-                    >
-                      {loading === `delete-${session.session_code}` ? (
-                        <Loader2 className="spin" size={16} />
-                      ) : (
-                        <Trash2 size={16} />
-                      )}
-                    </button>
+                    {mode === 'hosted' && (
+                  <button
+                    className="icon-button danger"
+                    type="button"
+                    onClick={() => deleteSession(session)}
+                    disabled={loading === `delete-${session.session_code}`}
+                    aria-label={`Delete session ${session.session_code}`}
+                    title="Delete session history"
+                  >
+                    {loading === `delete-${session.session_code}` ? (
+                      <Loader2 className="spin" size={16} />
+                    ) : (
+                      <Trash2 size={16} />
+                    )}
+                  </button>
+                )}
                   </div>
                 ))}
               </div>

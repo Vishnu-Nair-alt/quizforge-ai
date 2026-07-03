@@ -34,8 +34,8 @@ function SessionDetailSummary({
         <button className="icon-text-button" type="button" onClick={onBack}>
           <ArrowLeft size={16} /> All sessions
         </button>
-
-        {isHosted && (
+ 
+        {isHosted  && (
           <div className="history-detail-controls">
             <button
               className="icon-button danger"

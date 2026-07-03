@@ -1352,7 +1352,6 @@ button:focus-visible {
   gap: 16px;
 }
 
-.history-actions,
 .participant-detail-heading,
 .answer-counts,
 .history-metrics {
@@ -1361,8 +1360,57 @@ button:focus-visible {
   gap: 12px;
 }
 
-.history-actions {
+.history-detail-card {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.history-detail-toolbar,
+.history-detail-main,
+.history-detail-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-detail-toolbar {
   justify-content: space-between;
+}
+
+.history-detail-controls {
+  justify-content: flex-end;
+}
+
+.history-detail-main {
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.history-detail-title {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.history-detail-title .eyebrow,
+.history-detail-title h2,
+.history-detail-title p {
+  margin: 0;
+}
+
+.history-detail-title h2 {
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.history-detail-title p:not(.eyebrow) {
+  color: var(--muted);
+}
+
+.history-detail-card .session-status {
+  flex: 0 0 auto;
 }
 
 .history-detail-actions {
@@ -1392,7 +1440,10 @@ button:focus-visible {
 
 .history-metrics {
   grid-column: 1 / -1;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  align-items: stretch;
+  gap: 10px;
 }
 
 .history-metrics span,
@@ -1403,6 +1454,10 @@ button:focus-visible {
   color: var(--muted);
   background: #f8fafb;
   font-size: 12px;
+}
+
+.history-metrics span {
+  min-height: 56px;
 }
 
 .history-metrics strong {
@@ -1634,6 +1689,23 @@ button:focus-visible {
 }
 
 @media (max-width: 760px) {
+  .history-detail-toolbar,
+  .history-detail-main {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .history-detail-toolbar .icon-text-button,
+  .history-detail-controls,
+  .history-detail-controls .primary-button,
+  .history-detail-card .session-status {
+    width: 100%;
+  }
+
+  .history-detail-title h2 {
+    font-size: 24px;
+  }
+
   .session-history-item > button:first-child {
     grid-template-columns: auto minmax(0, 1fr);
   }

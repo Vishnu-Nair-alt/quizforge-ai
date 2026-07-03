@@ -19,6 +19,75 @@ function formatDate(value) {
   return new Date(value).toLocaleString()
 }
 
+function SessionDetailSummary({
+  detail,
+  loading,
+  onBack,
+  onDelete,
+  onExport,
+}) {
+  const isHosted = detail.historyMode === 'hosted'
+
+  return (
+    <section className="simple-card history-detail-card">
+      <div className="history-detail-toolbar">
+        <button className="icon-text-button" type="button" onClick={onBack}>
+          <ArrowLeft size={16} /> All sessions
+        </button>
+
+        {isHosted && (
+          <div className="history-detail-controls">
+            <button
+              className="icon-button danger"
+              type="button"
+              onClick={() => onDelete(detail)}
+              disabled={loading === `delete-${detail.session_code}`}
+              aria-label={`Delete session ${detail.session_code}`}
+              title="Delete session history"
+            >
+              {loading === `delete-${detail.session_code}` ? (
+                <Loader2 className="spin" size={17} />
+              ) : (
+                <Trash2 size={17} />
+              )}
+            </button>
+            <button
+              className="primary-button export-button"
+              type="button"
+              onClick={onExport}
+              disabled={loading === 'export'}
+            >
+              {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
+              Export CSV
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="history-detail-main">
+        <div className="history-detail-title">
+          <p className="eyebrow">
+            {detail.historyMode === 'joined' ? 'Joined session' : 'Hosted session'} - {detail.session_code}
+          </p>
+          <h2>{detail.quiz_title}</h2>
+          <p>{detail.difficulty} - {detail.total_questions} questions</p>
+        </div>
+
+        <span className={`session-status ${detail.status}`}>{detail.status}</span>
+      </div>
+
+      <div className="history-metrics">
+        <span><strong>{detail.participant_count}</strong> Participants</span>
+        <span><strong>{detail.submitted_count}</strong> Submitted</span>
+        <span><strong>{formatDate(detail.created_at)}</strong> Created</span>
+        {detail.historyMode === 'joined' && detail.submitted_at && (
+          <span><strong>{formatDate(detail.submitted_at)}</strong> My submission</span>
+        )}
+      </div>
+    </section>
+  )
+}
+
 function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
   const [mode, setMode] = useState('hosted')
   const [sessions, setSessions] = useState([])
@@ -155,49 +224,13 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
 
         {detail ? (
           <>
-            <div className="history-actions">
-              <button className="icon-text-button" type="button" onClick={() => setDetail(null)}>
-                <ArrowLeft size={16} /> All sessions
-              </button>
-              <div className="history-detail-actions">
-                {detail.historyMode === 'hosted' && (
-                  <button
-                    className="icon-button danger"
-                    type="button"
-                    onClick={() => deleteSession(detail)}
-                    disabled={loading === `delete-${detail.session_code}`}
-                    aria-label={`Delete session ${detail.session_code}`}
-                    title="Delete session history"
-                  >
-                    {loading === `delete-${detail.session_code}` ? (
-                      <Loader2 className="spin" size={17} />
-                    ) : (
-                      <Trash2 size={17} />
-                    )}
-                  </button>
-                )}
-                {detail.historyMode === 'hosted' && (
-                  <button className="primary-button export-button" type="button" onClick={exportReport} disabled={loading === 'export'}>
-                    {loading === 'export' ? <Loader2 className="spin" size={17} /> : <Download size={17} />}
-                    Export CSV
-                  </button>
-                )}
-                <p className="eyebrow">
-                  {detail.historyMode === 'joined' ? 'Joined session' : 'Session'} {detail.session_code}
-                </p>
-                <h2>{detail.quiz_title}</h2>
-                <p>{detail.difficulty} · {detail.total_questions} questions</p>
-              </div>
-              <span className={`session-status ${detail.status}`}>{detail.status}</span>
-              <div className="history-metrics">
-                <span><strong>{detail.participant_count}</strong> Participants</span>
-                <span><strong>{detail.submitted_count}</strong> Submitted</span>
-                <span><strong>{formatDate(detail.created_at)}</strong> Created</span>
-                {detail.historyMode === 'joined' && detail.submitted_at && (
-                  <span><strong>{formatDate(detail.submitted_at)}</strong> My submission</span>
-                )}
-              </div>
-            </div>
+            <SessionDetailSummary
+              detail={detail}
+              loading={loading}
+              onBack={() => setDetail(null)}
+              onDelete={deleteSession}
+              onExport={exportReport}
+            />
 
             <HostAIAnalysis
               key={`${detail.historyMode}-${detail.session_id}`}

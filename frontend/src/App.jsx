@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import HomePage from './pages/HomePage'
 import LoginSignupPage from './pages/LoginSignupPage'
 import QuizBuilderPage from './pages/QuizBuilderPage'
 import HostSessionPage from './pages/HostSessionPage'
@@ -10,7 +11,7 @@ import { apiRequest, clearSession, getStoredToken, getStoredUser } from './servi
 function App() {
   const [user, setUser] = useState(() => getStoredUser())
   const [checkingSession, setCheckingSession] = useState(Boolean(getStoredToken()))
-  const [page, setPage] = useState('quizzes')
+  const [page, setPage] = useState('home')
 
   useEffect(() => {
     if (!getStoredToken()) return
@@ -33,7 +34,7 @@ function App() {
   function handleLogout() {
     clearSession()
     setUser(null)
-    setPage('quizzes')
+    setPage('home')
   }
 
   if (checkingSession) {
@@ -41,6 +42,16 @@ function App() {
       <main className="app-shell">
         <div className="session-loader">Loading QuizForge AI...</div>
       </main>
+    )
+  }
+
+  if (!user && page === 'home') {
+    return (
+      <HomePage
+        user={user}
+        onNavigate={setPage}
+        onLogout={handleLogout}
+      />
     )
   }
 
@@ -65,6 +76,13 @@ function App() {
 
   return (
     <>
+      <div hidden={page !== 'home'}>
+        <HomePage
+          user={user}
+          onNavigate={setPage}
+          onLogout={handleLogout}
+        />
+      </div>
       <div hidden={page !== 'quizzes'}>
         <QuizBuilderPage
           user={user}

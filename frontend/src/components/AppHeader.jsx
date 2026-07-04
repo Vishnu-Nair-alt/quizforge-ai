@@ -1,6 +1,7 @@
-import { BookOpen, FileClock, LogIn, LogOut, Radio, Users } from 'lucide-react'
+import { BookOpen, FileClock, Home, LogIn, LogOut, Radio, Users } from 'lucide-react'
 
 const navigationItems = [
+  { id: 'home', label: 'Home', icon: Home },
   { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
   { id: 'host', label: 'Host session', icon: Radio },
   { id: 'history', label: 'History', icon: FileClock },
@@ -13,7 +14,7 @@ function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, ch
   return (
     <header className="app-header">
       <div className="app-nav">
-        <button className="app-brand" type="button" onClick={() => onNavigate('quizzes')}>
+        <button className="app-brand" type="button" onClick={() => onNavigate('home')}>
           <span className="brand-mark">Q</span>
           <span>
             <strong>QuizForge</strong>
@@ -40,7 +41,7 @@ function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, ch
           <div className="page-tabs guest-nav">
             <button type="button" onClick={() => onNavigate('quizzes')}>
               <LogIn size={16} />
-              <span>Back to login</span>
+              <span>Login</span>
             </button>
           </div>
         )}

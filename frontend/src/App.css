@@ -1554,6 +1554,26 @@ button:focus-visible {
   color: var(--muted);
 }
 
+.history-submission-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #cfe1dc;
+  border-radius: 999px;
+  background: #f3faf7;
+  color: #2f6f57;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.history-submission-pill svg {
+  flex: 0 0 auto;
+}
+
 .participant-detail {
   display: grid;
   gap: 14px;
@@ -1713,6 +1733,10 @@ button:focus-visible {
   .session-history-item > button:first-child > span:nth-child(n + 3),
   .session-history-item > button:first-child > svg:last-child {
     grid-column: 2;
+  }
+
+  .history-submission-pill {
+    width: fit-content;
   }
 
   .history-summary {

@@ -344,7 +344,10 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
                           {mode === 'joined' && session.joined_at ? ` · joined ${formatDate(session.joined_at)}` : ''}
                         </small>
                       </span>
-                      <span>{session.submitted_count}/{session.participant_count} submitted</span>
+                      <span className="history-submission-pill">
+                        <UsersRound size={15} />
+                        {session.submitted_count}/{session.participant_count} submitted
+                      </span>
                       <span className={`session-status ${session.status}`}>{session.status}</span>
                       {loading === `detail-${session.session_code}` && <Loader2 className="spin" size={17} />}
                     </button>

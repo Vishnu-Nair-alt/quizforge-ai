@@ -2,10 +2,10 @@ import { BookOpen, FileClock, Home, LogIn, LogOut, Radio, Users } from 'lucide-r
 
 const navigationItems = [
   { id: 'home', label: 'Home', icon: Home },
-  { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
-  { id: 'host', label: 'Host session', icon: Radio },
+  { id: 'quizzes', label: 'Build', icon: BookOpen },
+  { id: 'host', label: 'Host', icon: Radio },
   { id: 'history', label: 'History', icon: FileClock },
-  { id: 'join', label: 'Join session', icon: Users },
+  { id: 'join', label: 'Join', icon: Users },
 ]
 
 function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, children }) {

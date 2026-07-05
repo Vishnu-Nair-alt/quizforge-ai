@@ -1,4 +1,15 @@
-import { BookOpen, FileClock, LogIn, Radio, Sparkles, Users } from 'lucide-react'
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  FileClock,
+  FileText,
+  LogIn,
+  Radio,
+  Sparkles,
+  Trophy,
+  Users,
+} from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 
 const actions = [
@@ -8,6 +19,7 @@ const actions = [
     copy: 'Upload source material, generate questions, and save polished quizzes for later.',
     icon: Sparkles,
     button: 'Open builder',
+    meta: 'PDF to questions',
   },
   {
     id: 'host',
@@ -15,6 +27,7 @@ const actions = [
     copy: 'Choose a saved quiz, share a session code, and watch participants join in real time.',
     icon: Radio,
     button: 'Host session',
+    meta: 'Lobby ready',
   },
   {
     id: 'join',
@@ -22,7 +35,15 @@ const actions = [
     copy: 'Enter a session code and jump into a live quiz as a guest or signed-in user.',
     icon: Users,
     button: 'Join quiz',
+    meta: 'Code based',
   },
+]
+
+const workflow = [
+  { label: 'Source', value: 'Upload notes', icon: FileText },
+  { label: 'Quiz', value: 'Review draft', icon: CheckCircle2 },
+  { label: 'Session', value: 'Launch room', icon: Radio },
+  { label: 'Results', value: 'Track scores', icon: Trophy },
 ]
 
 function HomePage({ user, onNavigate, onLogout }) {
@@ -41,37 +62,45 @@ function HomePage({ user, onNavigate, onLogout }) {
         <div className="home-hero">
           <div className="home-hero-copy">
             <p className="eyebrow">AI quiz studio</p>
-            <h2>Turn study material into live quiz sessions.</h2>
+            <h2>Forge a quiz, open the room, see who gets it.</h2>
             <p>
-              Create quiz sets from documents, launch them for a room, or join an active
-              session without digging through the workspace.
+              QuizForge keeps the full flow close: generate from source material, host live,
+              and keep session history ready for review.
             </p>
             <div className="home-hero-actions">
-              <button className="primary-button" type="button" onClick={() => onNavigate('host')}>
-                <Radio size={17} />
-                Host a Quiz
+              <button className="primary-button" type="button" onClick={() => onNavigate('quizzes')}>
+                <Sparkles size={17} />
+                Build a Quiz
               </button>
-              <button className="icon-text-button" type="button" onClick={() => onNavigate('join')}>
-                <LogIn size={17} />
-                Join Session
+              <button className="icon-text-button" type="button" onClick={() => onNavigate(user ? 'host' : 'join')}>
+                {user ? <Radio size={17} /> : <LogIn size={17} />}
+                {user ? 'Host Live' : 'Join Session'}
               </button>
+            </div>
+            <div className="home-hero-metrics" aria-label="QuizForge workflow highlights">
+              <span><strong>4</strong> workflow steps</span>
+              <span><strong>30</strong> question max</span>
+              <span><strong>Live</strong> lobby updates</span>
             </div>
           </div>
 
           <div className="home-session-preview" aria-label="Session overview preview">
             <div className="home-preview-topline">
+              <span>
+                <small>Live room</small>
+                <strong>QF-284</strong>
+              </span>
               <span className="session-status active">active</span>
-              <strong>QF-284</strong>
             </div>
             <div className="home-preview-question">
-              <span>Q1</span>
+              <span>Q4</span>
               <p>Which concept best explains the material?</p>
             </div>
             <div className="home-preview-options">
-              <span />
-              <span />
-              <span className="selected" />
-              <span />
+              <span><i />Compare the key definitions</span>
+              <span><i />Memorize every paragraph</span>
+              <span className="selected"><i />Apply the source example</span>
+              <span><i />Skip the explanation</span>
             </div>
             <div className="home-preview-footer">
               <span><Users size={15} /> 18 joined</span>
@@ -80,10 +109,26 @@ function HomePage({ user, onNavigate, onLogout }) {
           </div>
         </div>
 
+        <div className="home-workflow" aria-label="QuizForge workflow">
+          {workflow.map(({ label, value, icon: Icon }, index) => (
+            <div className="home-workflow-step" key={label}>
+              <span className="home-workflow-icon"><Icon size={18} /></span>
+              <span>
+                <small>{label}</small>
+                <strong>{value}</strong>
+              </span>
+              {index < workflow.length - 1 && <ArrowRight className="home-workflow-arrow" size={17} />}
+            </div>
+          ))}
+        </div>
+
         <div className="home-action-grid">
-          {actions.map(({ id, title, copy, icon: Icon, button }) => (
+          {actions.map(({ id, title, copy, icon: Icon, button, meta }) => (
             <article className="simple-card home-action-card" key={id}>
-              <Icon size={24} />
+              <div className="home-action-topline">
+                <span><Icon size={21} /></span>
+                <small>{meta}</small>
+              </div>
               <h3>{title}</h3>
               <p>{copy}</p>
               <button className="icon-text-button" type="button" onClick={() => onNavigate(id)}>

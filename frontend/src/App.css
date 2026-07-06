@@ -1471,8 +1471,9 @@ button:focus-visible {
   min-height: 76px;
   border-bottom: 1px solid var(--line);
   padding: 10px max(32px, calc((100vw - 1376px) / 2));
-  background: #f4f6f6;
-  box-shadow: 0 3px 12px rgba(23, 33, 38, 0.04);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 24px rgba(23, 33, 38, 0.06);
+  backdrop-filter: blur(14px);
 }
 
 .app-brand {
@@ -1481,12 +1482,17 @@ button:focus-visible {
   justify-self: start;
   gap: 10px;
   border: 0;
-  padding: 0;
+  border-radius: 10px;
+  padding: 5px;
   background: transparent;
   color: var(--ink);
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.app-brand:hover {
+  background: #eef4f4;
 }
 
 .app-brand > span:last-child,
@@ -1538,11 +1544,15 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-self: center;
-  gap: 4px;
-  border: 1px solid #e4eaeb;
-  border-radius: 11px;
-  padding: 4px;
-  background: #f4f7f7;
+  gap: 3px;
+  min-width: 0;
+  border: 1px solid #d7e2e3;
+  border-radius: 8px;
+  padding: 3px;
+  background: #eef3f3;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(23, 33, 38, 0.04);
 }
 
 .page-tabs button {
@@ -1550,11 +1560,12 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  min-height: 38px;
+  gap: 6px;
+  min-width: 82px;
+  min-height: 36px;
   border: 0;
-  border-radius: 8px;
-  padding: 0 14px;
+  border-radius: 6px;
+  padding: 0 13px;
   background: transparent;
   color: var(--muted);
   font: inherit;
@@ -1564,22 +1575,35 @@ button:focus-visible {
   cursor: pointer;
 }
 
+.page-tabs button svg {
+  flex: 0 0 auto;
+}
+
 .page-tabs button:hover {
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.page-tabs button:focus-visible,
+.app-brand:focus-visible,
+.logout-button:focus-visible {
+  outline: 2px solid rgba(45, 120, 124, 0.35);
+  outline-offset: 2px;
 }
 
 .page-tabs button.active {
   background: #fff;
   color: var(--accent-strong);
-  box-shadow: 0 1px 5px rgba(23, 33, 38, 0.1);
+  box-shadow:
+    0 1px 2px rgba(23, 33, 38, 0.08),
+    0 8px 18px rgba(23, 33, 38, 0.06);
 }
 
 .page-tabs button.active::after {
   position: absolute;
-  right: 12px;
-  bottom: 5px;
-  left: 12px;
+  right: 13px;
+  bottom: 4px;
+  left: 13px;
   height: 2px;
   border-radius: 999px;
   background: var(--accent);
@@ -1587,8 +1611,9 @@ button:focus-visible {
 }
 
 .guest-nav {
-  border: 0;
+  border-color: transparent;
   background: transparent;
+  box-shadow: none;
 }
 
 .account-menu {
@@ -1704,10 +1729,17 @@ button:focus-visible {
   .page-tabs {
     order: 3;
     width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .page-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .page-tabs button {
     flex: 1;
+    min-width: 76px;
     padding: 0 8px;
   }
 
@@ -1735,12 +1767,13 @@ button:focus-visible {
 
 @media (max-width: 480px) {
   .page-tabs button {
-    gap: 5px;
+    gap: 4px;
+    min-width: 62px;
     font-size: 12px;
   }
 
   .page-tabs button span {
-    max-width: 76px;
+    max-width: 58px;
     overflow: hidden;
     text-overflow: ellipsis;
   }

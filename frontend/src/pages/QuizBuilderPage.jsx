@@ -15,13 +15,13 @@ import { apiRequest } from '../services/api'
 
 const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed']
 
-function QuizBuilderPage({ user, onLogout, onNavigate }) {
+function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
   const [file, setFile] = useState(null)
   const [uploadInfo, setUploadInfo] = useState(null)
   const [quizDraft, setQuizDraft] = useState({
     title: 'Generated Quiz',
-    number_of_questions: 10,
-    difficulty: 'Mixed',
+    number_of_questions: preferences?.defaultQuestionCount || 10,
+    difficulty: preferences?.defaultDifficulty || 'Mixed',
     topic_focus: '',
   })
   const [generatedQuiz, setGeneratedQuiz] = useState(null)

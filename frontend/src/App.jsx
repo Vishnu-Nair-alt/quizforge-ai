@@ -6,12 +6,21 @@ import QuizBuilderPage from './pages/QuizBuilderPage'
 import HostSessionPage from './pages/HostSessionPage'
 import JoinSessionPage from './pages/JoinSessionPage'
 import SessionHistoryPage from './pages/SessionHistoryPage/SessionHistoryPage'
+import SettingsPage from './pages/SettingsPage'
+import HelpPage from './pages/HelpPage'
 import { apiRequest, clearSession, getStoredToken, getStoredUser } from './services/api'
+import { applyPreferences, getPreferences, savePreferences } from './services/preferences'
 
 function App() {
   const [user, setUser] = useState(() => getStoredUser())
   const [checkingSession, setCheckingSession] = useState(Boolean(getStoredToken()))
   const [page, setPage] = useState('home')
+  const [preferences, setPreferences] = useState(() => getPreferences())
+
+  useEffect(() => {
+    applyPreferences(preferences)
+    savePreferences(preferences)
+  }, [preferences])
 
   useEffect(() => {
     if (!getStoredToken()) return
@@ -85,10 +94,18 @@ function App() {
       </div>
       <div hidden={page !== 'quizzes'}>
         <QuizBuilderPage
+          key={`${preferences.defaultQuestionCount}-${preferences.defaultDifficulty}`}
           user={user}
           onLogout={handleLogout}
           onNavigate={setPage}
+          preferences={preferences}
         />
+      </div>
+      <div hidden={page !== 'settings'}>
+        <SettingsPage user={user} preferences={preferences} onPreferencesChange={setPreferences} onNavigate={setPage} onLogout={handleLogout} />
+      </div>
+      <div hidden={page !== 'help'}>
+        <HelpPage user={user} onNavigate={setPage} onLogout={handleLogout} />
       </div>
       <div hidden={page !== 'host'}>
         <HostSessionPage

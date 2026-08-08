@@ -1,4 +1,4 @@
-import { BookOpen, FileClock, Home, LogIn, LogOut, Radio, Users } from 'lucide-react'
+import { BookOpen, FileClock, HelpCircle, Home, LogIn, LogOut, Radio, Settings, Users } from 'lucide-react'
 
 const navigationItems = [
   { id: 'home', label: 'Home', icon: Home },
@@ -6,6 +6,8 @@ const navigationItems = [
   { id: 'host', label: 'Host', icon: Radio },
   { id: 'history', label: 'History', icon: FileClock },
   { id: 'join', label: 'Join', icon: Users },
+  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'help', label: 'Help', icon: HelpCircle },
 ]
 
 function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, children }) {

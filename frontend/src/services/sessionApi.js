@@ -24,11 +24,11 @@ export const sessionApi = {
   lobby(code) {
     return apiRequest(`/sessions/${code}/lobby`)
   },
-  join(code, name) {
+  join(code, name, avatarUrl = null) {
     return apiRequest(`/sessions/${code}/join`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, avatar_url: avatarUrl || null }),
     })
   },
   start(code) {

@@ -1,6 +1,7 @@
-import { Check, Moon, RotateCcw, Settings, SlidersHorizontal, Sparkles, Sun } from 'lucide-react'
+import { Check, ImagePlus, Moon, RotateCcw, Settings, SlidersHorizontal, Sparkles, Sun, Trash2 } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 import { defaultPreferences } from '../services/preferences'
+import { readProfileImage } from '../services/profileImage'
 
 const themes = [
   { id: 'light', label: 'Light', icon: Sun },
@@ -20,10 +21,23 @@ function Toggle({ checked, onChange, label, description }) {
 
 function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLogout }) {
   const update = (changes) => onPreferencesChange({ ...preferences, ...changes })
+  const initial = (user?.name || user?.email || 'Q').trim().charAt(0).toUpperCase()
+
+  async function selectProfileImage(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    try {
+      update({ profileImage: await readProfileImage(file) })
+    } catch (error) {
+      window.alert(error.message)
+    } finally {
+      event.target.value = ''
+    }
+  }
 
   return (
     <main className="app-shell">
-      <AppHeader activePage="settings" title="Settings" subtitle="Make QuizForge work the way you prefer." user={user} onNavigate={onNavigate} onLogout={onLogout} />
+      <AppHeader activePage="settings" title="Settings" subtitle="Make QuizForge work the way you prefer." user={user} profileImage={preferences.profileImage} onNavigate={onNavigate} onLogout={onLogout} />
       <section className="settings-page">
         <aside className="settings-summary simple-card">
           <span className="settings-summary-icon"><Settings size={23} /></span>
@@ -34,6 +48,14 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
 
         <div className="settings-sections">
           <section className="simple-card settings-card">
+            <div className="settings-card-heading"><ImagePlus size={20} /><div><h2>Profile picture</h2><p>Choose the picture people see when you join a session.</p></div></div>
+            <div className="profile-picture-editor">
+              <span className="profile-picture-preview">{preferences.profileImage ? <img src={preferences.profileImage} alt="Your profile" /> : initial}</span>
+              <div><strong>{user?.name || 'QuizForge user'}</strong><small>PNG, JPG or WebP, up to 2 MB. A square crop is created automatically.</small><div className="profile-picture-actions"><label className="icon-text-button"><ImagePlus size={16} /> Choose picture<input type="file" accept="image/png,image/jpeg,image/webp" onChange={selectProfileImage} /></label>{preferences.profileImage && <button className="profile-remove-button" type="button" onClick={() => update({ profileImage: '' })}><Trash2 size={15} /> Remove</button>}</div></div>
+            </div>
+          </section>
+
+          <section className="simple-card settings-card">
             <div className="settings-card-heading"><Sun size={20} /><div><h2>Appearance</h2><p>Choose how the interface looks and feels.</p></div></div>
             <div className="theme-options">
               {themes.map(({ id, label, icon: Icon }) => (
@@ -43,7 +65,6 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
               ))}
             </div>
             <div className="settings-toggle-list">
-              <Toggle checked={preferences.compactMode} onChange={(compactMode) => update({ compactMode })} label="Compact layout" description="Reduce spacing to show more content at once." />
               <Toggle checked={preferences.reduceMotion} onChange={(reduceMotion) => update({ reduceMotion })} label="Reduce motion" description="Minimize interface animations and transitions." />
             </div>
           </section>

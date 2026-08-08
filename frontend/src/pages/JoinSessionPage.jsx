@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { Check, Loader2, Radio, RefreshCw, Send } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 import { sessionApi } from '../services/sessionApi'
+import { getPreferences } from '../services/preferences'
 
 function JoinSessionPage({ user, onNavigate, onLogout }) {
   const [form, setForm] = useState({ code: '', name: user?.name || '' })
+  const avatarUrl = user ? getPreferences().profileImage : ''
   const [participant, setParticipant] = useState(null)
   const [sessionStatus, setSessionStatus] = useState(null)
   const [quiz, setQuiz] = useState(null)
@@ -39,7 +41,7 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
     setLoading('join')
     setError('')
     try {
-      const joined = await sessionApi.join(code, form.name.trim())
+      const joined = await sessionApi.join(code, form.name.trim(), avatarUrl)
       setParticipant(joined)
       setSessionStatus(await sessionApi.status(code))
     } catch (err) {

@@ -2,8 +2,8 @@ export const PREFERENCES_KEY = 'quizforge_preferences'
 
 export const defaultPreferences = {
   theme: 'system',
-  compactMode: false,
   reduceMotion: false,
+  profileImage: '',
   defaultQuestionCount: 10,
   defaultDifficulty: 'Mixed',
 }
@@ -24,6 +24,6 @@ export function applyPreferences(preferences) {
   const root = document.documentElement
   const systemDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
   root.dataset.theme = preferences.theme === 'system' ? (systemDark ? 'dark' : 'light') : preferences.theme
-  root.dataset.density = preferences.compactMode ? 'compact' : 'comfortable'
+  delete root.dataset.density
   root.dataset.reduceMotion = preferences.reduceMotion ? 'true' : 'false'
 }

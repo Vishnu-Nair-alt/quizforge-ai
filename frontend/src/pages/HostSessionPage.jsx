@@ -202,7 +202,7 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
                 <div className="participant-list">
                   {lobby.participants.map((participant) => (
                     <div key={participant.id}>
-                      <strong>{participant.display_name}</strong>
+                      <span className="participant-identity"><span className="participant-avatar">{participant.avatar_url ? <img src={participant.avatar_url} alt="" /> : participant.display_name.charAt(0).toUpperCase()}</span><strong>{participant.display_name}</strong></span>
                       <span>{participant.has_submitted ? 'Submitted' : 'Joined'}</span>
                     </div>
                   ))}
@@ -221,7 +221,7 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
                     {results.map((result, index) => (
                       <div className="result-row" key={result.participant_id}>
                         <span>{result.has_submitted ? index + 1 : '-'}</span>
-                        <strong>{result.display_name}</strong>
+                        <span className="participant-identity"><span className="participant-avatar small">{result.avatar_url ? <img src={result.avatar_url} alt="" /> : result.display_name.charAt(0).toUpperCase()}</span><strong>{result.display_name}</strong></span>
                         <span>{result.has_submitted ? `${result.score}/${result.total_questions}` : 'Waiting'}</span>
                         <span>{result.has_submitted && result.total_questions ? `${Math.round((result.score / result.total_questions) * 100)}%` : '-'}</span>
                       </div>

@@ -182,15 +182,22 @@ def get_host_lobby(db: Session, session_code: str, current_user: User):
                 "id": participant.id,
                 "display_name": participant.display_name,
                 "joined_at": participant.joined_at,
-                "has_submitted": participant.has_submitted
+                "has_submitted": participant.has_submitted,
+                "avatar_url": participant.avatar_url
             }
             for participant in participants
         ]
     }
 
 
-def join_session(db: Session, session_code: str, name: str | None, current_user: User | None):
+def join_session(db: Session, session_code: str, name: str | None, avatar_url: str | None, current_user: User | None):
     session = get_session_by_code(db, session_code)
+
+    if avatar_url and (len(avatar_url) > 200_000 or not avatar_url.startswith("data:image/webp;base64,")):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile picture is not a valid QuizForge image."
+        )
 
     if session.status != "waiting":
         raise HTTPException(
@@ -232,7 +239,8 @@ def join_session(db: Session, session_code: str, name: str | None, current_user:
         session_id=session.id,
         user_id=user_id,
         display_name=display_name,
-        participant_token=participant_token
+        participant_token=participant_token,
+        avatar_url=avatar_url
     )
 
     db.add(participant)
@@ -244,7 +252,8 @@ def join_session(db: Session, session_code: str, name: str | None, current_user:
         "participant_token": participant.participant_token,
         "display_name": participant.display_name,
         "session_code": session.session_code,
-        "status": session.status
+        "status": session.status,
+        "avatar_url": participant.avatar_url
     }
 
 
@@ -507,7 +516,8 @@ def get_host_results(db: Session, session_code: str, current_user: User):
                 "has_submitted": participant.has_submitted,
                 "score": participant.score,
                 "total_questions": total_questions,
-                "submitted_at": participant.submitted_at
+                "submitted_at": participant.submitted_at,
+                "avatar_url": participant.avatar_url
             }
             for participant in participants
         ]

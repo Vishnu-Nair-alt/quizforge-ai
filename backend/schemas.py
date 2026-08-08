@@ -86,6 +86,7 @@ class PublicSessionStatusResponse(BaseModel):
 
 class JoinSessionRequest(BaseModel):
     name: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 
 class JoinSessionResponse(BaseModel):
@@ -94,6 +95,7 @@ class JoinSessionResponse(BaseModel):
     display_name: str
     session_code: str
     status: str
+    avatar_url: Optional[str] = None
 
 
 class ParticipantLobbyItem(BaseModel):
@@ -101,6 +103,7 @@ class ParticipantLobbyItem(BaseModel):
     display_name: str
     joined_at: datetime
     has_submitted: bool
+    avatar_url: Optional[str] = None
 
 
 class HostLobbyResponse(BaseModel):
@@ -162,6 +165,7 @@ class HostResultItem(BaseModel):
     score: Optional[int]
     total_questions: int
     submitted_at: Optional[datetime]
+    avatar_url: Optional[str] = None
 
 
 class HostResultsResponse(BaseModel):

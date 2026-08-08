@@ -81,6 +81,7 @@ class SessionParticipant(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     display_name = Column(String, nullable=False)
+    avatar_url = Column(Text, nullable=True)
 
     # This acts like a private key for guest participants.
     # They need this token to submit answers or see their own result.

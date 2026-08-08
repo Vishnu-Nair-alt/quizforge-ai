@@ -79,7 +79,7 @@ def join_quiz_session(
     db: Session = Depends(get_db),
     current_user: User | None = Depends(get_optional_current_user)
 ):
-    return join_session(db, session_code, request.name, current_user)
+    return join_session(db, session_code, request.name, request.avatar_url, current_user)
 
 
 @session_router.post("/{session_code}/start", response_model=StartSessionResponse)

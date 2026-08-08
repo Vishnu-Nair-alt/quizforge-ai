@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from database import Base, engine
+from sqlalchemy import inspect, text
 
 from features.quiz_generation.routes import router as api_router
 from features.auth.routes import auth_router
@@ -33,6 +34,11 @@ app.add_middleware(
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Lightweight migration for existing local SQLite databases.
+if engine.dialect.name == "sqlite" and "avatar_url" not in {column["name"] for column in inspect(engine).get_columns("session_participants")}:
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE session_participants ADD COLUMN avatar_url TEXT"))
 
 
 @app.get("/")

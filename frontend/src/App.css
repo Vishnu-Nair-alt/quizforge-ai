@@ -1690,11 +1690,15 @@ button:focus-visible {
 
 /* Shared application navigation */
 .app-header {
+  position: relative;
+  z-index: 100;
   width: 100%;
   padding: 0 0 22px;
 }
 
 .app-nav {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
   align-items: center;

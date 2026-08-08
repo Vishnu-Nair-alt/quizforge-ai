@@ -1,4 +1,6 @@
+import { useEffect, useRef, useState } from 'react'
 import { BookOpen, FileClock, HelpCircle, Home, LogIn, LogOut, Radio, Settings, Users } from 'lucide-react'
+import { getPreferences } from '../services/preferences'
 
 const navigationItems = [
   { id: 'home', label: 'Home', icon: Home },
@@ -10,8 +12,25 @@ const navigationItems = [
   { id: 'help', label: 'Help', icon: HelpCircle },
 ]
 
-function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, children }) {
+function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, profileImage: profileImageOverride, children }) {
   const initial = (user?.name || user?.email || 'Q').trim().charAt(0).toUpperCase()
+  const profileImage = user ? (profileImageOverride ?? getPreferences().profileImage) : ''
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileMenuRef = useRef(null)
+
+  useEffect(() => {
+    if (!profileOpen) return undefined
+    function closeProfileMenu(event) {
+      const clickedOutside = event.type === 'pointerdown' && !profileMenuRef.current?.contains(event.target)
+      if (event.key === 'Escape' || clickedOutside) setProfileOpen(false)
+    }
+    document.addEventListener('pointerdown', closeProfileMenu)
+    document.addEventListener('keydown', closeProfileMenu)
+    return () => {
+      document.removeEventListener('pointerdown', closeProfileMenu)
+      document.removeEventListener('keydown', closeProfileMenu)
+    }
+  }, [profileOpen])
 
   return (
     <header className="app-header">
@@ -49,16 +68,20 @@ function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, ch
         )}
 
         {user && (
-          <div className="account-menu">
-            <span className="account-avatar" aria-hidden="true">{initial}</span>
+          <div className="account-menu" ref={profileMenuRef}>
+            <button className="account-avatar" type="button" onClick={() => setProfileOpen((open) => !open)} aria-label="Open profile menu" aria-expanded={profileOpen}>{profileImage ? <img src={profileImage} alt="" /> : initial}</button>
             <span className="account-copy">
               <strong>{user.name || 'Creator'}</strong>
               <small>{user.email}</small>
             </span>
-            <button className="logout-button" type="button" onClick={onLogout} title="Log out">
-              <LogOut size={17} />
-              <span>Logout</span>
-            </button>
+            {profileOpen && (
+              <div className="profile-menu-panel">
+                <span className="profile-menu-avatar">{profileImage ? <img src={profileImage} alt="Your profile" /> : initial}</span>
+                <div className="profile-menu-identity"><strong>{user.name || 'Creator'}</strong><span>{user.email}</span></div>
+                <button type="button" onClick={() => { setProfileOpen(false); onNavigate('settings') }}><Settings size={16} /><span>Profile & settings</span></button>
+                <button className="profile-menu-logout" type="button" onClick={onLogout}><LogOut size={16} /><span>Log out</span></button>
+              </div>
+            )}
           </div>
         )}
       </div>

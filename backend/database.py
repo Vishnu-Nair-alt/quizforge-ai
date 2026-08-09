@@ -7,6 +7,11 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./quizforge.db")
 
+# SQLAlchemy expects the explicit PostgreSQL scheme. Some hosting providers still
+# expose database URLs using the legacy `postgres://` prefix.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 connect_args = {}
 
 if DATABASE_URL.startswith("sqlite"):

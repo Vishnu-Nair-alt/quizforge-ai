@@ -7,6 +7,9 @@ backend/.env
 backend/.env.*
 frontend/.env
 frontend/.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 
 # =========================
 # Python / FastAPI backend
@@ -24,8 +27,13 @@ backend/.venv/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.hypothesis/
+.tox/
+.nox/
 .coverage
+.coverage.*
 htmlcov/
+*.egg-info/
 
 # =========================
 # Database files
@@ -48,12 +56,18 @@ backend/uploads/
 # =========================
 node_modules/
 frontend/node_modules/
+.npm/
+.pnpm-store/
 
 dist/
 frontend/dist/
 
 build/
 frontend/build/
+.vite/
+frontend/.vite/
+.eslintcache
+*.tsbuildinfo
 
 # =========================
 # Logs

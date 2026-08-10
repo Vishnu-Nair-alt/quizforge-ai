@@ -1,17 +1,8 @@
 from typing import List
-from typing import Literal
 from pydantic import BaseModel, EmailStr, Field
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-
-
-class GenerateQuizRequest(BaseModel):
-    document_id: int
-    title: str
-    number_of_questions: int = Field(ge=1, le=30)
-    difficulty: Literal["Easy", "Medium", "Hard", "Mixed"]
-    topic_focus: Optional[str] = ""
 
 
 class MCQ(BaseModel):
@@ -28,7 +19,6 @@ class QuizGenerationResponse(BaseModel):
 
 class SaveQuizRequest(BaseModel):
     title: str
-    filename: Optional[str] = None
     difficulty: str
     topic_focus: Optional[str] = ""
     questions: List[MCQ]
@@ -253,7 +243,6 @@ class SessionDetailResponse(BaseModel):
     session_id: int
     quiz_id: int
     quiz_title: str
-    quiz_filename: Optional[str]
     difficulty: str
     topic_focus: Optional[str]
     total_questions: int

@@ -38,6 +38,16 @@ def get_owned_session(
     return session
 
 
+def get_session_quiz_or_raise(session: QuizSession):
+    if session.quiz is None:
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="The quiz for this session was deleted. The history entry can still be removed.",
+        )
+
+    return session.quiz
+
+
 def get_owner_session_history(db: Session, current_user: User):
     sessions = (
         db.query(QuizSession)
@@ -49,6 +59,7 @@ def get_owner_session_history(db: Session, current_user: User):
     history = []
 
     for session in sessions:
+        quiz = session.quiz
         participants = (
             db.query(SessionParticipant)
             .filter(SessionParticipant.session_id == session.id)
@@ -64,7 +75,7 @@ def get_owner_session_history(db: Session, current_user: User):
         history.append({
             "session_id": session.id,
             "quiz_id": session.quiz_id,
-            "quiz_title": session.quiz.title,
+            "quiz_title": quiz.title if quiz else "Deleted quiz",
             "session_code": session.session_code,
             "status": session.status,
             "created_at": session.created_at,
@@ -72,7 +83,7 @@ def get_owner_session_history(db: Session, current_user: User):
             "ended_at": session.ended_at,
             "participant_count": len(participants),
             "submitted_count": len(submitted),
-            "total_questions": len(session.quiz.questions),
+            "total_questions": len(quiz.questions) if quiz else 0,
             "average_score": (
                 round(sum(scores) / len(scores), 2)
                 if scores else None
@@ -95,7 +106,9 @@ def get_joined_session_history(db: Session, current_user: User):
 
     for participant in participants:
         session = participant.session
-        participant_detail = build_participant_detail(db, participant, session.quiz.questions)
+        quiz = session.quiz
+        questions = quiz.questions if quiz else []
+        participant_detail = build_participant_detail(db, participant, questions)
         participant_count = (
             db.query(SessionParticipant)
             .filter(SessionParticipant.session_id == session.id)
@@ -113,7 +126,7 @@ def get_joined_session_history(db: Session, current_user: User):
         history.append({
             "session_id": session.id,
             "quiz_id": session.quiz_id,
-            "quiz_title": session.quiz.title,
+            "quiz_title": quiz.title if quiz else "Deleted quiz",
             "session_code": session.session_code,
             "status": session.status,
             "created_at": session.created_at,
@@ -121,7 +134,7 @@ def get_joined_session_history(db: Session, current_user: User):
             "submitted_at": participant.submitted_at,
             "participant_count": participant_count,
             "submitted_count": submitted_count,
-            "total_questions": len(session.quiz.questions),
+            "total_questions": len(questions),
             "has_submitted": participant.has_submitted,
             "score": participant.score,
             "correct_count": participant_detail["correct_count"],
@@ -154,7 +167,8 @@ def get_joined_session_detail(
         )
 
     session = participant.session
-    participant_detail = build_participant_detail(db, participant, session.quiz.questions)
+    quiz = get_session_quiz_or_raise(session)
+    participant_detail = build_participant_detail(db, participant, quiz.questions)
     participant_count = (
         db.query(SessionParticipant)
         .filter(SessionParticipant.session_id == session.id)
@@ -172,11 +186,10 @@ def get_joined_session_detail(
     return {
         "session_id": session.id,
         "quiz_id": session.quiz_id,
-        "quiz_title": session.quiz.title,
-        "quiz_filename": session.quiz.filename,
-        "difficulty": session.quiz.difficulty,
-        "topic_focus": session.quiz.topic_focus,
-        "total_questions": len(session.quiz.questions),
+        "quiz_title": quiz.title,
+        "difficulty": quiz.difficulty,
+        "topic_focus": quiz.topic_focus,
+        "total_questions": len(quiz.questions),
         "session_code": session.session_code,
         "status": session.status,
         "created_at": session.created_at,
@@ -243,6 +256,7 @@ def get_owner_session_detail(
     current_user: User,
 ):
     session = get_owned_session(db, session_code, current_user)
+    quiz = get_session_quiz_or_raise(session)
     participants = (
         db.query(SessionParticipant)
         .filter(SessionParticipant.session_id == session.id)
@@ -250,18 +264,17 @@ def get_owner_session_detail(
         .all()
     )
     participant_details = [
-        build_participant_detail(db, participant, session.quiz.questions)
+        build_participant_detail(db, participant, quiz.questions)
         for participant in participants
     ]
 
     return {
         "session_id": session.id,
         "quiz_id": session.quiz_id,
-        "quiz_title": session.quiz.title,
-        "quiz_filename": session.quiz.filename,
-        "difficulty": session.quiz.difficulty,
-        "topic_focus": session.quiz.topic_focus,
-        "total_questions": len(session.quiz.questions),
+        "quiz_title": quiz.title,
+        "difficulty": quiz.difficulty,
+        "topic_focus": quiz.topic_focus,
+        "total_questions": len(quiz.questions),
         "session_code": session.session_code,
         "status": session.status,
         "created_at": session.created_at,

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 from pypdf import PdfReader
@@ -7,9 +7,9 @@ from google import genai
 import os
 import re
 
-from schemas import GenerateQuizRequest, QuizGenerationResponse, SaveQuizRequest
+from schemas import QuizGenerationResponse, SaveQuizRequest
 from database import get_db
-from models import Quiz, UploadedDocument, User
+from models import Quiz, QuizSession, User
 from features.auth.service import get_current_user
 
 
@@ -79,62 +79,14 @@ def select_relevant_context(text: str, topic_focus: Optional[str], max_chars: in
 
 
 
-@router.post("/upload-pdf")
-async def upload_pdf(
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(
-            status_code=400,
-            detail="Only PDF files are supported."
-        )
-
-    extracted_text = ""
-
-    try:
-        reader = PdfReader(file.file)
-
-        for page_number, page in enumerate(reader.pages, start=1):
-            page_text = page.extract_text() or ""
-            extracted_text += f"\n\n--- Page {page_number} ---\n"
-            extracted_text += page_text
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to read PDF: {str(e)}"
-        )
-
-    document = UploadedDocument(
-        owner_id=current_user.id,
-        filename=file.filename,
-        extracted_text=extracted_text
-    )
-
-    db.add(document)
-    db.commit()
-    db.refresh(document)
-
-    return {
-        "success": True,
-        "document_id": document.id,
-        "filename": document.filename,
-        "total_characters": len(document.extracted_text),
-        "preview": document.extracted_text[:1000]
-    }
-
-
-
-
-
-
 @router.post("/generate-quiz")
 def generate_quiz(
-    request: GenerateQuizRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    file: UploadFile = File(...),
+    title: str = Form(..., min_length=1),
+    number_of_questions: int = Form(..., ge=1, le=30),
+    difficulty: str = Form(...),
+    topic_focus: str = Form(""),
+    current_user: User = Depends(get_current_user),
 ):
     if not GEMINI_API_KEY:
         raise HTTPException(
@@ -142,40 +94,52 @@ def generate_quiz(
             detail="GEMINI_API_KEY is missing in .env file."
         )
 
-    document = (
-        db.query(UploadedDocument)
-        .filter(
-            UploadedDocument.id == request.document_id,
-            UploadedDocument.owner_id == current_user.id
-        )
-        .first()
-    )
-
-    if document is None or not document.extracted_text.strip():
+    if difficulty not in {"Easy", "Medium", "Hard", "Mixed"}:
         raise HTTPException(
-            status_code=404,
-            detail="Uploaded PDF not found."
+            status_code=422,
+            detail="Difficulty must be Easy, Medium, Hard, or Mixed."
         )
 
-    selected_context = select_relevant_context(
-        text=document.extracted_text,
-        topic_focus=request.topic_focus
-    )
+    filename = file.filename or ""
+    if not filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+
+    try:
+        reader = PdfReader(file.file)
+        extracted_text = "".join(
+            f"\n\n--- Page {page_number} ---\n{page.extract_text() or ''}"
+            for page_number, page in enumerate(reader.pages, start=1)
+        )
+    except Exception as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to read PDF: {str(error)}"
+        ) from error
+    finally:
+        file.file.close()
+
+    if not extracted_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="The PDF does not contain extractable text."
+        )
+
+    selected_context = select_relevant_context(extracted_text, topic_focus)
 
     prompt = f"""
 You are an expert academic quiz creator.
 
 Your task:
-Generate {request.number_of_questions} multiple choice questions from the provided document text.
+Generate {number_of_questions} multiple choice questions from the provided document text.
 
 Quiz title:
-{request.title}
+{title}
 
 Difficulty:
-{request.difficulty}
+{difficulty}
 
 Topic focus:
-{request.topic_focus if request.topic_focus else "No specific topic focus. Use the most important concepts from the document."}
+{topic_focus if topic_focus else "No specific topic focus. Use the most important concepts from the document."}
 
 Rules:
 - Use ONLY the provided document text.
@@ -207,10 +171,9 @@ Document text:
 
         return {
             "success": True,
-            "title": request.title,
-            "filename": document.filename,
-            "difficulty": request.difficulty,
-            "topic_focus": request.topic_focus,
+            "title": title,
+            "difficulty": difficulty,
+            "topic_focus": topic_focus,
             "questions": [question.model_dump() for question in quiz_data.questions]
         }
 
@@ -240,7 +203,6 @@ def save_quiz(
     quiz = Quiz(
         owner_id=current_user.id,
         title=request.title,
-        filename=request.filename,
         difficulty=request.difficulty,
         number_of_questions=len(request.questions),
         topic_focus=request.topic_focus,
@@ -279,7 +241,6 @@ def get_all_quizzes(
             {
                 "id": quiz.id,
                 "title": quiz.title,
-                "filename": quiz.filename,
                 "difficulty": quiz.difficulty,
                 "number_of_questions": quiz.number_of_questions,
                 "topic_focus": quiz.topic_focus,
@@ -316,7 +277,6 @@ def get_quiz(
         "quiz": {
             "id": quiz.id,
             "title": quiz.title,
-            "filename": quiz.filename,
             "difficulty": quiz.difficulty,
             "number_of_questions": quiz.number_of_questions,
             "topic_focus": quiz.topic_focus,
@@ -349,7 +309,6 @@ def update_quiz(
         )
 
     quiz.title = request.title
-    quiz.filename = request.filename or quiz.filename
     quiz.difficulty = request.difficulty
     quiz.topic_focus = request.topic_focus
     quiz.number_of_questions = len(request.questions)
@@ -385,6 +344,12 @@ def delete_quiz(
         raise HTTPException(
             status_code=404,
             detail="Quiz not found."
+        )
+
+    if db.query(QuizSession.id).filter(QuizSession.quiz_id == quiz.id).first():
+        raise HTTPException(
+            status_code=409,
+            detail="This quiz has session history and cannot be deleted. Delete its sessions first."
         )
 
     db.delete(quiz)

@@ -25,7 +25,6 @@ class Quiz(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     title = Column(String, nullable=False)
-    filename = Column(String, nullable=True)
     difficulty = Column(String, nullable=False)
     number_of_questions = Column(Integer, nullable=False)
     topic_focus = Column(String, nullable=True)
@@ -33,21 +32,6 @@ class Quiz(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     owner = relationship("User", back_populates="quizzes")
-
-
-class UploadedDocument(Base):
-    __tablename__ = "uploaded_documents"
-
-    id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    filename = Column(String, nullable=False)
-    extracted_text = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    owner = relationship("User")
-
-
-    #V2
 
 class QuizSession(Base):
     __tablename__ = "quiz_sessions"

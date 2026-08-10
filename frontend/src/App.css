@@ -20,16 +20,6 @@
 .theme-options button { display: flex; align-items: center; gap: 8px; min-height: 48px; border: 1px solid var(--line); border-radius: 8px; padding: 0 13px; background: var(--panel); color: var(--muted); font: inherit; font-weight: 800; cursor: pointer; }
 .theme-options button span { flex: 1; text-align: left; }
 .theme-options button.active { border-color: var(--accent); color: var(--accent-strong); background: #eef7f7; }
-.settings-toggle-list { display: grid; border-top: 1px solid var(--line); }
-.settings-toggle-row { position: relative; display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
-.settings-toggle-row > span:first-child { display: grid; flex: 1; gap: 3px; }
-.settings-toggle-row strong { color: var(--ink); font-size: 14px; }
-.settings-toggle-row small { color: var(--muted); font-weight: 600; }
-.settings-toggle-row input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.settings-switch { width: 42px; height: 24px; padding: 3px; border-radius: 99px; background: #c7d1d4; transition: background 150ms ease; }
-.settings-switch i { display: block; width: 18px; height: 18px; border-radius: 50%; background: white; box-shadow: 0 1px 3px #0003; transition: transform 150ms ease; }
-.settings-toggle-row input:checked + .settings-switch { background: var(--accent); }
-.settings-toggle-row input:checked + .settings-switch i { transform: translateX(18px); }
 .settings-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .settings-fields select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 7px; padding: 8px 11px; background: var(--panel); color: var(--ink); font: inherit; }
 .settings-reset { display: inline-flex; justify-self: start; align-items: center; gap: 7px; border: 0; padding: 8px 2px; background: transparent; color: #a33329; font: inherit; font-weight: 800; cursor: pointer; }
@@ -234,14 +224,6 @@
 :root[data-theme='dark'] .danger-button {
   background: #9d4038;
   color: #fff;
-}
-
-:root[data-theme='dark'] .settings-switch {
-  background: #52636a;
-}
-
-:root[data-theme='dark'] .settings-switch i {
-  background: #e7eeee;
 }
 
 .topbar {
@@ -899,7 +881,42 @@ button:focus-visible {
 }
 
 .spin {
+  display: inline-block;
+  flex: 0 0 auto;
+  transform-origin: center;
   animation: spin 0.8s linear infinite;
+}
+
+.file-drop small {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.source-file-summary span,
+.source-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.source-file-actions .icon-text-button {
+  flex: 1;
+}
+
+.source-file-actions label {
+  position: relative;
+}
+
+.source-file-actions input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.source-file-actions .danger {
+  color: #a9473e;
 }
 
 @keyframes spin {

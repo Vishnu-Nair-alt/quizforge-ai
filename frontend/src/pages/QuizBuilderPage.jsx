@@ -17,7 +17,6 @@ const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed']
 
 function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
   const [file, setFile] = useState(null)
-  const [uploadInfo, setUploadInfo] = useState(null)
   const [quizDraft, setQuizDraft] = useState({
     title: 'Generated Quiz',
     number_of_questions: preferences?.defaultQuestionCount || 10,
@@ -32,7 +31,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
-  const canGenerate = Boolean(uploadInfo?.filename && quizDraft.title.trim())
+  const canGenerate = Boolean(file && quizDraft.title.trim())
   const canSave = Boolean(generatedQuiz?.questions?.length)
 
   const questionCountLabel = useMemo(() => {
@@ -53,30 +52,19 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
     }
   }
 
-  async function handleUpload(event) {
-    event.preventDefault()
-    if (!file) return
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    setLoading('upload')
+  function handleFileSelection(event) {
+    const selectedFile = event.target.files?.[0] || null
+    setFile(selectedFile)
+    setGeneratedQuiz(null)
     setError('')
     setNotice('')
+  }
 
-    try {
-      const data = await apiRequest('/upload-pdf', {
-        method: 'POST',
-        body: formData,
-      })
-      setUploadInfo(data)
-      setGeneratedQuiz(null)
-      setNotice(`${data.filename} uploaded`)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading('')
-    }
+  function removeFile() {
+    setFile(null)
+    setGeneratedQuiz(null)
+    setError('')
+    setNotice('PDF removed')
   }
 
   async function handleGenerate(event) {
@@ -90,18 +78,19 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
     setActiveView('builder')
 
     try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('title', quizDraft.title.trim())
+      formData.append('number_of_questions', String(Number(quizDraft.number_of_questions)))
+      formData.append('difficulty', quizDraft.difficulty)
+      formData.append('topic_focus', quizDraft.topic_focus)
+
       const data = await apiRequest('/generate-quiz', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...quizDraft,
-          document_id: uploadInfo.document_id,
-          number_of_questions: Number(quizDraft.number_of_questions),
-        }),
+        body: formData,
       })
       setGeneratedQuiz(data)
+      setFile(null)
       setNotice('Quiz generated')
     } catch (err) {
       setError(err.message)
@@ -125,7 +114,6 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
         },
         body: JSON.stringify({
           title: generatedQuiz.title,
-          filename: generatedQuiz.filename,
           difficulty: generatedQuiz.difficulty,
           topic_focus: generatedQuiz.topic_focus || '',
           questions: generatedQuiz.questions,
@@ -217,31 +205,36 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
 
           {activeView === 'builder' ? (
             <>
-              <form className="panel-section" onSubmit={handleUpload}>
+              <section className="panel-section">
                 <div className="section-title">
                   <FileText size={18} />
                   <h2>Source Material</h2>
                 </div>
-                <label className="file-drop">
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(event) => setFile(event.target.files?.[0] || null)}
-                  />
-                  <Upload size={22} />
-                  <span>{file?.name || uploadInfo?.filename || 'Choose Source'}</span>
-                </label>
-                {uploadInfo && (
-                  <div className="metric-row">
-                    <span>{uploadInfo.filename}</span>
-                    <strong>{uploadInfo.total_characters.toLocaleString()} chars</strong>
-                  </div>
+                {!file ? (
+                  <label className="file-drop">
+                    <input type="file" accept="application/pdf,.pdf" onChange={handleFileSelection} />
+                    <Upload size={22} />
+                    <span>Choose PDF</span>
+                    <small>The file stays in this browser until you generate.</small>
+                  </label>
+                ) : (
+                  <>
+                    <div className="metric-row source-file-summary">
+                      <span><FileText size={16} /> {file.name}</span>
+                      <strong>{(file.size / 1024 / 1024).toFixed(2)} MB</strong>
+                    </div>
+                    <div className="source-file-actions">
+                      <label className="icon-text-button">
+                        <RefreshCw size={16} /> Replace PDF
+                        <input type="file" accept="application/pdf,.pdf" onChange={handleFileSelection} />
+                      </label>
+                      <button className="icon-text-button danger" type="button" onClick={removeFile}>
+                        <Trash2 size={16} /> Remove
+                      </button>
+                    </div>
+                  </>
                 )}
-                <button className="primary-button" type="submit" disabled={!file || loading === 'upload'}>
-                  {loading === 'upload' ? <Loader2 className="spin" size={17} /> : <Upload size={17} />}
-                  Upload
-                </button>
-              </form>
+              </section>
 
               <form className="panel-section" onSubmit={handleGenerate}>
                 <div className="section-title">

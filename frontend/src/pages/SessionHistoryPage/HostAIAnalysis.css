@@ -198,6 +198,24 @@
   color: var(--accent-strong);
 }
 
+/* Keep every analysis surface inside the dark palette. */
+:root[data-theme='dark'] .ai-analysis-prompt {
+  border-color: var(--line);
+  background: linear-gradient(135deg, var(--panel), var(--surface-raised));
+}
+
+:root[data-theme='dark'] .ai-analysis-metrics span,
+:root[data-theme='dark'] .ai-topic-group,
+:root[data-theme='dark'] .ai-insight-section,
+:root[data-theme='dark'] .ai-question-evidence,
+:root[data-theme='dark'] .ai-actions {
+  background: var(--surface-subtle);
+}
+
+:root[data-theme='dark'] .ai-question-evidence article > span {
+  background: var(--soft-accent);
+}
+
 @media (max-width: 760px) {
   .ai-analysis-prompt,
   .ai-topic-grid,

@@ -9,16 +9,6 @@ const themes = [
   { id: 'system', label: 'System', icon: SlidersHorizontal },
 ]
 
-function Toggle({ checked, onChange, label, description }) {
-  return (
-    <label className="settings-toggle-row">
-      <span><strong>{label}</strong><small>{description}</small></span>
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
-      <span className="settings-switch" aria-hidden="true"><i /></span>
-    </label>
-  )
-}
-
 function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLogout }) {
   const update = (changes) => onPreferencesChange({ ...preferences, ...changes })
   const initial = (user?.name || user?.email || 'Q').trim().charAt(0).toUpperCase()
@@ -63,9 +53,6 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
                   <Icon size={19} /><span>{label}</span>{preferences.theme === id && <Check size={16} />}
                 </button>
               ))}
-            </div>
-            <div className="settings-toggle-list">
-              <Toggle checked={preferences.reduceMotion} onChange={(reduceMotion) => update({ reduceMotion })} label="Reduce motion" description="Minimize interface animations and transitions." />
             </div>
           </section>
 

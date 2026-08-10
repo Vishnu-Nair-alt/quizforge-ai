@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import './App.css'
 import HomePage from './pages/HomePage'
 import LoginSignupPage from './pages/LoginSignupPage'
@@ -49,7 +50,7 @@ function App() {
   if (checkingSession) {
     return (
       <main className="app-shell">
-        <div className="session-loader">Loading QuizForge AI...</div>
+        <div className="session-loader"><Loader2 className="spin" size={20} /> Loading QuizForge AI...</div>
       </main>
     )
   }

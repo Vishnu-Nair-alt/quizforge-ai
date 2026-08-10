@@ -193,6 +193,12 @@ def get_host_lobby(db: Session, session_code: str, current_user: User):
 def join_session(db: Session, session_code: str, name: str | None, avatar_url: str | None, current_user: User | None):
     session = get_session_by_code(db, session_code)
 
+    if current_user is not None and session.host_user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The quiz host cannot join their own session as a participant."
+        )
+
     if avatar_url and (len(avatar_url) > 200_000 or not avatar_url.startswith("data:image/webp;base64,")):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,5 +1,7 @@
 from typing import List
-from pydantic import BaseModel, EmailStr, Field
+import re
+
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
@@ -30,7 +32,24 @@ class SaveQuizRequest(BaseModel):
 class UserSignupRequest(BaseModel):
     name: str = Field(min_length=2)
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8, max_length=72)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, password: str) -> str:
+        has_letter = re.search(r"[A-Za-z]", password)
+        has_number = re.search(r"\d", password)
+        has_special_character = re.search(r"[^A-Za-z0-9\s]", password)
+
+        if not has_letter or not has_number or not has_special_character:
+            raise ValueError(
+                "Password must contain at least one letter, one number, and one special character."
+            )
+
+        if len(password.encode("utf-8")) > 72:
+            raise ValueError("Password must be no more than 72 bytes.")
+
+        return password
 
 
 class UserLoginRequest(BaseModel):

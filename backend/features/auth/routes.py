@@ -10,6 +10,7 @@ from features.auth.service import (
     create_access_token,
     get_current_user
 )
+from features.auth.validation import ensure_email_domain_accepts_mail
 
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -26,6 +27,8 @@ def signup(request: UserSignupRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_409_CONFLICT,
             detail="Email is already registered."
         )
+
+    ensure_email_domain_accepts_mail(email)
 
     user = User(
         name=request.name.strip(),

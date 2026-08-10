@@ -182,9 +182,13 @@ function LoginSignupPage({ onAuthenticated, onJoinSession }) {
                   onChange={(event) =>
                     setSignupForm((form) => ({ ...form, password: event.target.value }))
                   }
-                  minLength={6}
+                  minLength={8}
+                  maxLength={72}
+                  pattern="(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}"
+                  title="Use at least 8 characters, including a letter, number, and special character."
                   required
                 />
+                <small>At least 8 characters, including a letter, number, and special character.</small>
               </label>
               <button className="primary-button" type="submit" disabled={loading}>
                 {loading ? <Loader2 className="spin" size={17} /> : <UserPlus size={17} />}

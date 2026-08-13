@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 import { apiRequest } from '../services/api'
+import { toast } from '../services/toast'
 
 const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed']
 
@@ -49,6 +50,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
       setSavedQuizzes(data.quizzes || [])
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     }
   }
 
@@ -58,6 +60,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
     setGeneratedQuiz(null)
     setError('')
     setNotice('')
+    if (selectedFile) toast.success(`${selectedFile.name} is ready`)
   }
 
   function removeFile() {
@@ -65,6 +68,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
     setGeneratedQuiz(null)
     setError('')
     setNotice('PDF removed')
+    toast.info('Source PDF removed')
   }
 
   async function handleGenerate(event) {
@@ -92,8 +96,10 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
       setGeneratedQuiz(data)
       setFile(null)
       setNotice('Quiz generated')
+      toast.success('Quiz generated successfully')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -120,9 +126,11 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
         }),
       })
       setNotice('Quiz saved')
+      toast.success('Quiz saved to your library')
       await loadQuizzes()
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -138,8 +146,10 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
       setSelectedQuiz(data.quiz)
       setGeneratedQuiz(null)
       setActiveView('library')
+      toast.info('Quiz opened from library')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -155,12 +165,14 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
         method: 'DELETE',
       })
       setNotice('Quiz deleted')
+      toast.success('Quiz deleted')
       if (selectedQuiz?.id === quizId) {
         setSelectedQuiz(null)
       }
       await loadQuizzes()
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -207,8 +219,8 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
             <>
               <section className="panel-section">
                 <div className="section-title">
-                  <FileText size={18} />
-                  <h2>Source Material</h2>
+                  <span className="builder-step">1</span>
+                  <div><h2>Source material</h2><p>Start with the document your quiz should follow.</p></div>
                 </div>
                 {!file ? (
                   <label className="file-drop">
@@ -238,8 +250,8 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
 
               <form className="panel-section" onSubmit={handleGenerate}>
                 <div className="section-title">
-                  <Sparkles size={18} />
-                  <h2>Quiz Settings</h2>
+                  <span className="builder-step">2</span>
+                  <div><h2>Shape the quiz</h2><p>Set the scope, focus, and level.</p></div>
                 </div>
                 <label>
                   Title
@@ -293,7 +305,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
                   disabled={!canGenerate || loading === 'generate'}
                 >
                   {loading === 'generate' ? <Loader2 className="spin" size={17} /> : <Sparkles size={17} />}
-                  Generate
+                  Generate quiz
                 </button>
               </form>
             </>
@@ -380,10 +392,18 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              <Sparkles size={32} />
-              <h2>Ready for a quiz</h2>
-              <p>Choose your source material, tune the settings, and generate a polished quiz.</p>
+            <div className="builder-empty-state">
+              <div className="builder-empty-mark"><Sparkles size={26} /></div>
+              <p className="eyebrow">Your canvas</p>
+              <h2>Turn source material into a quiz</h2>
+              <p>Complete the two steps on the left. Your generated questions will arrive here, ready to review and save.</p>
+              <div className="builder-empty-flow" aria-label="Quiz creation steps">
+                <span className={file ? 'complete' : ''}><strong>{file ? <Check size={15} /> : '1'}</strong> Add PDF</span>
+                <i />
+                <span><strong>2</strong> Tune settings</span>
+                <i />
+                <span><strong>3</strong> Review quiz</span>
+              </div>
             </div>
           )}
         </section>

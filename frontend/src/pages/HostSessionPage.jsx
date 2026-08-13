@@ -3,6 +3,7 @@ import { Copy, Loader2, Play, Radio, RefreshCw, Square, Users } from 'lucide-rea
 import AppHeader from '../components/AppHeader'
 import { apiRequest } from '../services/api'
 import { sessionApi } from '../services/sessionApi'
+import { toast } from '../services/toast'
 
 function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
   const [quizzes, setQuizzes] = useState([])
@@ -86,8 +87,10 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
       setSession(data)
       const lobbyData = await sessionApi.lobby(data.session_code)
       setLobby(lobbyData)
+      toast.success(`Session ${data.session_code} created`)
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -103,8 +106,10 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
           : await sessionApi.end(session.session_code)
       setSession((current) => ({ ...current, ...data }))
       await refreshSession()
+      toast.success(action === 'start' ? 'Session started' : 'Session ended')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -167,7 +172,7 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
             <div className="simple-card session-code-panel">
               <p>Session code</p>
               <strong>{session.session_code}</strong>
-              <button className="icon-text-button" type="button" onClick={() => navigator.clipboard.writeText(session.session_code)}>
+              <button className="icon-text-button" type="button" onClick={() => { navigator.clipboard.writeText(session.session_code); toast.success('Session code copied') }}>
                 <Copy size={16} /> Copy
               </button>
               <span className={`session-status ${session.status}`}>{session.status}</span>

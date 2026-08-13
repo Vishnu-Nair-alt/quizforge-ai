@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import AppHeader from '../../components/AppHeader'
 import HostAIAnalysis from './HostAIAnalysis'
+import { toast } from '../../services/toast'
 import { sessionHistoryApi } from '../../services/sessionHistoryApi'
 
 function formatDate(value) {
@@ -175,8 +176,10 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
     setError('')
     try {
       await sessionHistoryApi.download(detail.session_code)
+      toast.success('Session report downloaded')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -201,8 +204,10 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
         setDetail(null)
       }
       setNotice(`Session ${session.session_code} deleted.`)
+      toast.success(`Session ${session.session_code} deleted`)
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }

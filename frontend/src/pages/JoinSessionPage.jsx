@@ -3,6 +3,7 @@ import { Check, Loader2, Radio, RefreshCw, Send } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 import { sessionApi } from '../services/sessionApi'
 import { getPreferences } from '../services/preferences'
+import { toast } from '../services/toast'
 
 function JoinSessionPage({ user, onNavigate, onLogout }) {
   const [form, setForm] = useState({ code: '', name: user?.name || '' })
@@ -44,8 +45,10 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
       const joined = await sessionApi.join(code, form.name.trim(), avatarUrl)
       setParticipant(joined)
       setSessionStatus(await sessionApi.status(code))
+      toast.success(`Joined session ${code}`)
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }
@@ -80,8 +83,10 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
         })),
       )
       setResult(await sessionApi.myResult(code, participant))
+      toast.success('Answers submitted successfully')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading('')
     }

@@ -2,6 +2,7 @@ import { Check, ImagePlus, Moon, RotateCcw, Settings, SlidersHorizontal, Sparkle
 import AppHeader from '../components/AppHeader'
 import { defaultPreferences } from '../services/preferences'
 import { readProfileImage } from '../services/profileImage'
+import { toast } from '../services/toast'
 
 const themes = [
   { id: 'light', label: 'Light', icon: Sun },
@@ -18,8 +19,9 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
     if (!file) return
     try {
       update({ profileImage: await readProfileImage(file) })
+      toast.success('Profile picture updated')
     } catch (error) {
-      window.alert(error.message)
+      toast.error(error.message)
     } finally {
       event.target.value = ''
     }
@@ -41,7 +43,7 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
             <div className="settings-card-heading"><ImagePlus size={20} /><div><h2>Profile picture</h2><p>Choose the picture people see when you join a session.</p></div></div>
             <div className="profile-picture-editor">
               <span className="profile-picture-preview">{preferences.profileImage ? <img src={preferences.profileImage} alt="Your profile" /> : initial}</span>
-              <div><strong>{user?.name || 'QuizForge user'}</strong><small>PNG, JPG or WebP, up to 2 MB. A square crop is created automatically.</small><div className="profile-picture-actions"><label className="icon-text-button"><ImagePlus size={16} /> Choose picture<input type="file" accept="image/png,image/jpeg,image/webp" onChange={selectProfileImage} /></label>{preferences.profileImage && <button className="profile-remove-button" type="button" onClick={() => update({ profileImage: '' })}><Trash2 size={15} /> Remove</button>}</div></div>
+              <div><strong>{user?.name || 'QuizForge user'}</strong><small>PNG, JPG or WebP, up to 2 MB. A square crop is created automatically.</small><div className="profile-picture-actions"><label className="icon-text-button"><ImagePlus size={16} /> Choose picture<input type="file" accept="image/png,image/jpeg,image/webp" onChange={selectProfileImage} /></label>{preferences.profileImage && <button className="profile-remove-button" type="button" onClick={() => { update({ profileImage: '' }); toast.info('Profile picture removed') }}><Trash2 size={15} /> Remove</button>}</div></div>
             </div>
           </section>
 
@@ -49,7 +51,7 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
             <div className="settings-card-heading"><Sun size={20} /><div><h2>Appearance</h2><p>Choose how the interface looks and feels.</p></div></div>
             <div className="theme-options">
               {themes.map(({ id, label, icon: Icon }) => (
-                <button key={id} type="button" className={preferences.theme === id ? 'active' : ''} onClick={() => update({ theme: id })} aria-pressed={preferences.theme === id}>
+                <button key={id} type="button" className={preferences.theme === id ? 'active' : ''} onClick={() => { update({ theme: id }); toast.success(`${label} theme selected`) }} aria-pressed={preferences.theme === id}>
                   <Icon size={19} /><span>{label}</span>{preferences.theme === id && <Check size={16} />}
                 </button>
               ))}
@@ -64,7 +66,7 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
             </div>
           </section>
 
-          <button className="settings-reset" type="button" onClick={() => onPreferencesChange(defaultPreferences)}><RotateCcw size={16} /> Reset all preferences</button>
+          <button className="settings-reset" type="button" onClick={() => { onPreferencesChange(defaultPreferences); toast.info('Preferences reset to defaults') }}><RotateCcw size={16} /> Reset all preferences</button>
         </div>
       </section>
     </main>

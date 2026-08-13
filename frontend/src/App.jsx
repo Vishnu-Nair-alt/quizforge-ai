@@ -9,10 +9,12 @@ import JoinSessionPage from './pages/JoinSessionPage'
 import SessionHistoryPage from './pages/SessionHistoryPage/SessionHistoryPage'
 import SettingsPage from './pages/SettingsPage'
 import HelpPage from './pages/HelpPage'
+import ToastViewport from './components/ToastViewport'
 import { apiRequest, clearSession, getStoredToken, getStoredUser } from './services/api'
 import { applyPreferences, getPreferences, savePreferences } from './services/preferences'
+import { toast } from './services/toast'
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(() => getStoredUser())
   const [checkingSession, setCheckingSession] = useState(Boolean(getStoredToken()))
   const [page, setPage] = useState('home')
@@ -45,6 +47,7 @@ function App() {
     clearSession()
     setUser(null)
     setPage('home')
+    toast.info('You have been logged out')
   }
 
   if (checkingSession) {
@@ -133,6 +136,10 @@ function App() {
       </div>
     </>
   )
+}
+
+function App() {
+  return <><AppContent /><ToastViewport /></>
 }
 
 export default App

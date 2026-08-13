@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LogIn, Loader2, Radio, Sparkles, UserPlus } from 'lucide-react'
 import { apiRequest, storeSession } from '../services/api'
+import { toast } from '../services/toast'
 
 const emptyLoginForm = {
   email: '',
@@ -38,9 +39,11 @@ function LoginSignupPage({ onAuthenticated, onJoinSession }) {
       })
 
       storeSession(data.access_token, data.user)
+      toast.success(`Welcome back, ${data.user.name || 'quiz maker'}`)
       onAuthenticated(data.user)
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading(false)
     }
@@ -69,8 +72,10 @@ function LoginSignupPage({ onAuthenticated, onJoinSession }) {
       })
       setSignupForm(emptySignupForm)
       setNotice(data.message || 'Account created. Login to continue.')
+      toast.success(data.message || 'Account created. Login to continue.')
     } catch (err) {
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading(false)
     }

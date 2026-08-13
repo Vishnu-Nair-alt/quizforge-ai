@@ -3,6 +3,7 @@ export const PREFERENCES_KEY = 'quizforge_preferences'
 export const defaultPreferences = {
   theme: 'system',
   profileImage: '',
+  notificationsEnabled: true,
   defaultQuestionCount: 10,
   defaultDifficulty: 'Mixed',
 }

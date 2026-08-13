@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BookOpen, FileClock, HelpCircle, Home, LogIn, LogOut, Radio, Settings, Users } from 'lucide-react'
+import { Anvil, BookOpen, FileClock, HelpCircle, Home, LogIn, LogOut, Radio, Settings, Sparkles, Users } from 'lucide-react'
 import { getPreferences } from '../services/preferences'
 
 const navigationItems = [
@@ -36,7 +36,10 @@ function AppHeader({ activePage, title, subtitle, user, onNavigate, onLogout, pr
     <header className="app-header">
       <div className="app-nav">
         <button className="app-brand" type="button" onClick={() => onNavigate('home')}>
-          <span className="brand-mark">Q</span>
+          <span className="brand-mark" aria-hidden="true">
+            <Anvil className="brand-anvil" size={25} strokeWidth={2.2} />
+            <Sparkles className="brand-spark" size={13} strokeWidth={2.6} />
+          </span>
           <span>
             <strong>QuizForge</strong>
             <small>AI quiz studio</small>

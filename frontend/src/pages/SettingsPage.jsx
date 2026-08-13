@@ -1,4 +1,4 @@
-import { Check, ImagePlus, Moon, RotateCcw, Settings, SlidersHorizontal, Sparkles, Sun, Trash2 } from 'lucide-react'
+import { Bell, Check, ImagePlus, Moon, RotateCcw, Settings, SlidersHorizontal, Sparkles, Sun, Trash2 } from 'lucide-react'
 import AppHeader from '../components/AppHeader'
 import { defaultPreferences } from '../services/preferences'
 import { readProfileImage } from '../services/profileImage'
@@ -56,6 +56,15 @@ function SettingsPage({ user, preferences, onPreferencesChange, onNavigate, onLo
                 </button>
               ))}
             </div>
+          </section>
+
+          <section className="simple-card settings-card">
+            <div className="settings-card-heading"><Bell size={20} /><div><h2>Notifications</h2><p>Control whether toast notifications appear in the app.</p></div></div>
+            <label className="notification-setting">
+              <span><strong>Toast notifications</strong><small>Show success, error, and informational messages.</small></span>
+              <input type="checkbox" checked={preferences.notificationsEnabled} onChange={(event) => update({ notificationsEnabled: event.target.checked })} />
+              <span className="settings-switch" aria-hidden="true" />
+            </label>
           </section>
 
           <section className="simple-card settings-card">

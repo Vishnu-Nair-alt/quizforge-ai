@@ -12,7 +12,7 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
   const [lobby, setLobby] = useState(null)
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState('restore')
-  const [error, setError] = useState('')
+  const [, setError] = useState('')
   const sessionCode = session?.session_code
 
   useEffect(() => {
@@ -136,7 +136,6 @@ function HostSessionPage({ isActive, user, onNavigate, onLogout }) {
       />
 
       <section className="simple-page">
-        {error && <p className="status error">{error}</p>}
 
         {!session ? (
           <div className="simple-card host-create-card">

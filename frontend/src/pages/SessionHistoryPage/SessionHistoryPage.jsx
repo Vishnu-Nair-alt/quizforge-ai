@@ -95,8 +95,8 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
   const [sessions, setSessions] = useState([])
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState('list')
-  const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [, setError] = useState('')
+  const [, setNotice] = useState('')
 
   useEffect(() => {
     if (!isActive) return
@@ -121,16 +121,6 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
       cancelled = true
     }
   }, [isActive, mode])
-
-  useEffect(() => {
-    if (!notice) return
-
-    const timer = window.setTimeout(() => {
-      setNotice('')
-    }, 5000)
-
-    return () => window.clearTimeout(timer)
-  }, [notice])
 
   async function loadHistory() {
     setLoading('list')
@@ -225,9 +215,6 @@ function SessionHistoryPage({ isActive, user, onNavigate, onLogout }) {
       />
 
       <section className="simple-page history-page">
-        {error && <p className="status error">{error}</p>}
-        {notice && <p className="status success">{notice}</p>}
-
         {detail ? (
           <>
             <SessionDetailSummary

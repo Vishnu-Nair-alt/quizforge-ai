@@ -19,8 +19,8 @@ function LoginSignupPage({ onAuthenticated, onJoinSession }) {
   const [loginForm, setLoginForm] = useState(emptyLoginForm)
   const [signupForm, setSignupForm] = useState(emptySignupForm)
   const [loading, setLoading] = useState(false)
-  const [notice, setNotice] = useState('')
-  const [error, setError] = useState('')
+  const [, setNotice] = useState('')
+  const [, setError] = useState('')
 
   async function handleLogin(event) {
     event.preventDefault()
@@ -117,9 +117,6 @@ function LoginSignupPage({ onAuthenticated, onJoinSession }) {
               Sign Up
             </button>
           </div>
-
-          {error && <p className="auth-message error">{error}</p>}
-          {!error && notice && <p className="auth-message success">{notice}</p>}
 
           {mode === 'login' ? (
             <form className="auth-form" onSubmit={handleLogin}>

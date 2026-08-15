@@ -29,8 +29,8 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
   const [selectedQuiz, setSelectedQuiz] = useState(null)
   const [activeView, setActiveView] = useState('builder')
   const [loading, setLoading] = useState('')
-  const [notice, setNotice] = useState('')
-  const [error, setError] = useState('')
+  const [, setNotice] = useState('')
+  const [, setError] = useState('')
 
   const canGenerate = Boolean(file && quizDraft.title.trim())
   const canSave = Boolean(generatedQuiz?.questions?.length)
@@ -189,10 +189,7 @@ function QuizBuilderPage({ user, onLogout, onNavigate, preferences }) {
         user={user}
         onNavigate={onNavigate}
         onLogout={onLogout}
-      >
-        {error && <span className="status error">{error}</span>}
-        {!error && notice && <span className="status success">{notice}</span>}
-      </AppHeader>
+      />
 
       <section className="workspace">
         <aside className="control-panel">

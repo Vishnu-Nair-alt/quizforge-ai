@@ -14,7 +14,7 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
   const [answers, setAnswers] = useState({})
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState('')
-  const [error, setError] = useState('')
+  const [, setError] = useState('')
 
   const code = form.code.trim().toUpperCase()
 
@@ -104,7 +104,6 @@ function JoinSessionPage({ user, onNavigate, onLogout }) {
       />
 
       <section className="simple-page">
-        {error && <p className="status error">{error}</p>}
 
         {!participant ? (
           <form className="simple-card join-card-simple" onSubmit={joinSession}>
